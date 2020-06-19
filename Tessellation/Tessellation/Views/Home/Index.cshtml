@@ -1,8 +1,17 @@
 ﻿@{
     ViewData["Title"] = "Home Page";
 }
+@model Tessellation.Models.User
 
 <div class="text-center">
     <h1 class="display-4">Welcome</h1>
     <p>Learn about <a href="https://docs.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
 </div>
+<form asp-action="Page2" method="post">
+    <label>Name</label>
+    <input asp-for="Name"/>
+    <label>Password</label>
+    <input asp-for="Password"/>
+    <button type="submit">Submit</button>
+</form>
+<a href="@Url.Action("Page2","Home")"> Go to Page2 </a>
