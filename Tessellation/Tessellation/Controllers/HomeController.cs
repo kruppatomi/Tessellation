@@ -31,17 +31,25 @@ namespace Tessellation.Controllers
         {
             QueryHandler.connect(_configuration);
 
+            //register
             if (QueryHandler.executePasswordSelect(user.Name).Equals("NULL"))
             {
                 QueryHandler.insertUsernameAndPassword(user.Name, user.Password);
+                return View(user);
             }
-
-            if (PasswordHandler.verifyPassword(user.Name, user.Password))
+            else
+            //login
             {
-                user.Password = user.Password + " =Verified";
+                if((PasswordHandler.verifyPassword(user.Name, user.Password)))
+                {
+                    user.Password = user.Password + " =Verified";
+                    return View(user);
+                }
+                else
+                {
+                    return View(user);
+                }
             }
-
-            return View(user);
         }
 
 
@@ -68,6 +76,7 @@ namespace Tessellation.Controllers
 
             return RedirectToAction("Index");
         }
+
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
