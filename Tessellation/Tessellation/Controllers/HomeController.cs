@@ -1,4 +1,8 @@
-﻿using System.Diagnostics;
+﻿using System.Collections.Generic;
+using System.Diagnostics;
+using System.Security.Claims;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
@@ -38,6 +42,31 @@ namespace Tessellation.Controllers
             }
 
             return View(user);
+        }
+
+
+        [Authorize]
+        public IActionResult Secret()
+        {
+            return View();
+        }
+
+
+        public IActionResult Authenticate()
+        {
+            var grandmaClaims = new List<Claim>()
+            {
+                new Claim(ClaimTypes.Name, "Tommer"),
+                new Claim(ClaimTypes.Email, "t@tmail.com"),
+                new Claim("Grandma.Says", "very nice boy.")
+            };
+
+            var grandmaIdentity = new ClaimsIdentity(grandmaClaims, "Grandma Identity");
+            var userPrincipal = new ClaimsPrincipal(grandmaIdentity);
+
+            HttpContext.SignInAsync(userPrincipal);
+
+            return RedirectToAction("Index");
         }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
