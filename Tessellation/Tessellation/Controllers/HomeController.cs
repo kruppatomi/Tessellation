@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Tessellation.Models;
+using Tessellation.Services;
 using BCrypt.Net;
 
 namespace Tessellation.Controllers
@@ -30,42 +31,17 @@ namespace Tessellation.Controllers
 
         public IActionResult Page2(User user)
         {
-            //hash the password
-            string myPassword = user.Password;
-            string mySalt = BCrypt.Net.BCrypt.GenerateSalt();
-            string myHash = BCrypt.Net.BCrypt.HashPassword(myPassword, mySalt);
-     
+            QueryHandler.connect(_configuration);
 
-            //get the user and send it to the db
-            //connect to the db
-            //insert
-            string connectionString = _configuration.GetConnectionString("MyConnectionString");
-            SqlConnection sqlConnection = new SqlConnection(connectionString);
-            //sqlConnection.Open();
-            //string insertQuery = "INSERT INTO [dbo].[users]([name],[password]) VALUES(@name, @password)";
-            //SqlCommand sqlCommand = new SqlCommand(insertQuery, sqlConnection);
-            //sqlCommand.Parameters.AddWithValue("@name", user.Name);
-            //sqlCommand.Parameters.AddWithValue("@password", myHash);
-            //sqlCommand.ExecuteNonQuery();
-            //sqlConnection.Close();
-
-            //select
-            sqlConnection.Open();
-            string selectQuery = "SELECT [password] FROM[dbo].[users] WHERE name = @name";
-            SqlCommand sqlSelectCommand = new SqlCommand(selectQuery, sqlConnection);
-            sqlSelectCommand.Parameters.AddWithValue("@name", user.Name);
-
-            //jo
-            using (SqlDataReader reader = sqlSelectCommand.ExecuteReader())
+            if (QueryHandler.executePasswordSelect(user.Name).Equals("NULL"))
             {
-                if (reader.Read())
-                {
-                    bool doesPasswordMatch = BCrypt.Net.BCrypt.Verify(user.Password, reader["password"].ToString());
-                }
+                QueryHandler.insertUsernameAndPassword(user.Name, user.Password);
             }
 
-            sqlConnection.Close();
-            
+            if (PasswordHandler.verifyPassword(user.Name, user.Password))
+            {
+                user.Password = user.Password + " =Verified";
+            }
 
             return View(user);
         }

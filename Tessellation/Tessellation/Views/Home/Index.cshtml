@@ -9,9 +9,9 @@
 </div>
 <form asp-action="Page2" method="post">
     <label>Name</label>
-    <input asp-for="Name"/>
+    <input asp-for="Name" required/>
     <label>Password</label>
-    <input asp-for="Password"/>
+    <input type="password" asp-for="Password" required/>
     <button type="submit">Submit</button>
 </form>
 <a href="@Url.Action("Page2","Home")"> Go to Page2 </a>
