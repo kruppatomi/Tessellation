@@ -7,6 +7,7 @@
     <h1 class="display-4">Welcome</h1>
     <p>Learn about <a href="https://docs.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
 </div>
+<label>Register</label>
 <form asp-action="Register" method="post">
     <label>Name</label>
     <input asp-for="Name" required />
@@ -32,6 +33,7 @@
     <h2>Logged out</h2>
 }
 <button onclick="window.location.href='@Url.Action("Logout", "Home")'">Logout</button>
+<label>Login</label>
 <form asp-action="Login" method="post">
     <label>Name</label>
     <input asp-for="Name" required />

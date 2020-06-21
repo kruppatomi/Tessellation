@@ -107,7 +107,7 @@ namespace Tessellation.Controllers
 
                 return RedirectToAction("Index");
             }
-
+            //az authentikációt át kellene rakni a loginba
             var tessellationClaims = new List<Claim>()
             {
                 new Claim(ClaimTypes.Name, user.Name)
@@ -145,8 +145,7 @@ namespace Tessellation.Controllers
 
             if ((PasswordHandler.verifyPassword(user.Name, user.Password)))
             {
-                user.Password = user.Password + " =Verified";
-
+                HttpContext.Session.SetString("sessionUser", user.Name);
                 return RedirectToAction("Editor");
             }
             else
