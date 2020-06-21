@@ -24,8 +24,14 @@
 }
 @if (ViewBag.User != null)
 {
-    <h1>@ViewBag.User</h1>
+    <h1>Logged in as @ViewBag.User</h1>
+    <h2>this is a content for you</h2>
 }
+@if (ViewBag.User == null)
+{
+    <h2>Logged out</h2>
+}
+<button onclick="window.location.href='@Url.Action("Logout", "Home")'">Logout</button>
 <form asp-action="Login" method="post">
     <label>Name</label>
     <input asp-for="Name" required />
