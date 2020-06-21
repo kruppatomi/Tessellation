@@ -7,11 +7,29 @@
     <h1 class="display-4">Welcome</h1>
     <p>Learn about <a href="https://docs.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
 </div>
-<form asp-action="Page2" method="post">
+<form asp-action="Register" method="post">
     <label>Name</label>
-    <input asp-for="Name" required/>
+    <input asp-for="Name" required />
     <label>Password</label>
-    <input type="password" asp-for="Password" required/>
+    <input type="password" asp-for="Password" required />
     <button type="submit">Submit</button>
 </form>
-<a href="@Url.Action("Page2","Home")"> Go to Page2 </a>
+@if (ViewBag.Message != null)
+{
+    <script type="text/javascript">
+        window.onload = function () {
+            alert("@ViewBag.Message")
+        }
+    </script>
+}
+@if (ViewBag.User != null)
+{
+    <h1>@ViewBag.User</h1>
+}
+<form asp-action="Login" method="post">
+    <label>Name</label>
+    <input asp-for="Name" required />
+    <label>Password</label>
+    <input type="password" asp-for="Password" required />
+    <button type="submit">Submit</button>
+</form>

@@ -26,10 +26,14 @@ namespace Tessellation
             services.AddAuthentication("CookieAuth")
                 .AddCookie("CookieAuth", config =>
                 {
-                    config.Cookie.Name = "Grandmas.Cookie";
-                    config.LoginPath = "/Home/Authenticate";
+                    config.Cookie.Name = "Tessellation.Cookie";
+                    config.LoginPath = "/Home/Register";
                 });
             services.AddControllersWithViews();
+            services.AddSession(options =>
+            {
+                options.IdleTimeout = TimeSpan.FromSeconds(3600);
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -56,6 +60,8 @@ namespace Tessellation
 
             //are you allowed?
             app.UseAuthorization();
+
+            app.UseSession();
 
 
             app.UseEndpoints(endpoints =>

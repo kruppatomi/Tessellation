@@ -1,13 +1,21 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Security.Claims;
+using System.Text;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.DataProtection;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using Microsoft.Owin.Security.Cookies;
 using Tessellation.Models;
 using Tessellation.Services;
+using System.Web;
+using Newtonsoft.Json;
 
 namespace Tessellation.Controllers
 {
@@ -24,57 +32,128 @@ namespace Tessellation.Controllers
 
         public IActionResult Index()
         {
+
+                ViewBag.Message = TempData["message"];
+                ViewBag.User = HttpContext.Session.GetString("sessionUser");
+
             return View();
         }
 
-        public IActionResult Page2(User user)
-        {
-            QueryHandler.connect(_configuration);
+        //public IActionResult Page2(User user)
+        //{
+        //    QueryHandler.connect(_configuration);
 
-            //register
-            if (QueryHandler.executePasswordSelect(user.Name).Equals("NULL"))
-            {
-                QueryHandler.insertUsernameAndPassword(user.Name, user.Password);
-                return View(user);
-            }
-            else
-            //login
-            {
-                if((PasswordHandler.verifyPassword(user.Name, user.Password)))
-                {
-                    user.Password = user.Password + " =Verified";
-                    return View(user);
-                }
-                else
-                {
-                    return View(user);
-                }
-            }
-        }
+        //    //register
+        //    if (QueryHandler.executePasswordSelect(user.Name).Equals("NULL"))
+        //    {
+        //        QueryHandler.insertUsernameAndPassword(user.Name, user.Password);
+        //        return View(user);
+        //    }
+        //    else
+        //    //login
+        //    {
+        //        if((PasswordHandler.verifyPassword(user.Name, user.Password)))
+        //        {
+        //            user.Password = user.Password + " =Verified";
+        //            return View(user);
+        //        }
+        //        else
+        //        {
+        //            return View(user);
+        //        }
+        //    }
+        //}
 
 
         [Authorize]
-        public IActionResult Secret()
+        public IActionResult Editor()
         {
             return View();
         }
 
 
-        public IActionResult Authenticate()
+        //public IActionResult Authenticate()
+        //{
+        //    var grandmaClaims = new List<Claim>()
+        //    {
+        //        new Claim(ClaimTypes.Name, "Tommer"),
+        //        new Claim(ClaimTypes. "t@tmail.com"),
+        //        new Claim("Grandma.Says", "very nice boy.")
+        //    };
+
+        //    var grandmaIdentity = new ClaimsIdentity(grandmaClaims, "Grandma Identity");
+        //    var userPrincipal = new ClaimsPrincipal(grandmaIdentity);
+
+        //    HttpContext.SignInAsync(userPrincipal);
+
+        //    return RedirectToAction("Index");
+        //}
+
+        public IActionResult Register(User user)
         {
-            var grandmaClaims = new List<Claim>()
+            QueryHandler.connect(_configuration);
+
+            if (QueryHandler.executePasswordSelect(user.Name).Equals("NULL"))
             {
-                new Claim(ClaimTypes.Name, "Tommer"),
-                new Claim(ClaimTypes.Email, "t@tmail.com"),
-                new Claim("Grandma.Says", "very nice boy.")
+                QueryHandler.insertUsernameAndPassword(user.Name, user.Password);
+                //TempData["message"] = "registration was succesfull";
+                HttpContext.Session.SetString("sessionUser", user.Name);
+            }
+            else
+            {
+                //try to register with existing username
+                TempData["message"] =  "username is not available";
+
+
+                return RedirectToAction("Index");
+            }
+
+            var tessellationClaims = new List<Claim>()
+            {
+                new Claim(ClaimTypes.Name, user.Name)
             };
 
-            var grandmaIdentity = new ClaimsIdentity(grandmaClaims, "Grandma Identity");
-            var userPrincipal = new ClaimsPrincipal(grandmaIdentity);
+            var tessellationIdentity = new ClaimsIdentity(tessellationClaims, "Tessellation Identity");
+            var userPrincipal = new ClaimsPrincipal(tessellationIdentity);
 
             HttpContext.SignInAsync(userPrincipal);
 
-            return RedirectToAction("Index");
+
+            //decrypt cookie
+            //var provider = DataProtectionProvider.Create(new DirectoryInfo(@"C:\temp-keys\"));
+
+            //string cookieValue = HttpContext.Request.Cookies["Tessellation.Cookie"];
+            //string userName = System.Security.Principal.WindowsIdentity.GetCurrent().Name;
+
+            //var dataProtector = provider.CreateProtector(
+            //typeof(CookieAuthenticationMiddleware).FullName, "MyCookie", "v2");
+
+            //UTF8Encoding specialUtf8Encoding = new UTF8Encoding(false, true);
+            //byte[] protectedBytes = Base64UrlTextEncoder.Decode(cookieValue);
+            //byte[] plainBytes = dataProtector.Unprotect(protectedBytes);
+            //string plainText = specialUtf8Encoding.GetString(plainBytes);
+
+            //return Content(plainText);
+
+            return RedirectToAction("Editor");
+
+        }
+
+        public IActionResult Login(User user)
+        {
+            QueryHandler.connect(_configuration);
+
+            if ((PasswordHandler.verifyPassword(user.Name, user.Password)))
+            {
+                user.Password = user.Password + " =Verified";
+
+                return RedirectToAction("Editor");
+            }
+            else
+            {
+
+                return RedirectToAction("Index");
+            }
         }
 
 
