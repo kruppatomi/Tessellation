@@ -23,7 +23,17 @@ namespace Tessellation
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddAuthentication("CookieAuth")
+                .AddCookie("CookieAuth", config =>
+                {
+                    config.Cookie.Name = "Tessellation.Cookie";
+                    config.LoginPath = "/Home/Register";
+                });
             services.AddControllersWithViews();
+            services.AddSession(options =>
+            {
+                options.IdleTimeout = TimeSpan.FromSeconds(3600);
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -44,7 +54,15 @@ namespace Tessellation
 
             app.UseRouting();
 
+            //who are you?
+            app.UseAuthentication();
+
+
+            //are you allowed?
             app.UseAuthorization();
+
+            app.UseSession();
+
 
             app.UseEndpoints(endpoints =>
             {

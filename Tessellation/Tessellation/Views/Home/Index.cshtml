@@ -3,15 +3,48 @@
 }
 @model Tessellation.Models.User
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://docs.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+
+@if (ViewBag.User != null)
+{
+    <h1>Logged in as @ViewBag.User</h1>
+    <button onclick="window.location.href='@Url.Action("Logout", "Home")'">Logout</button>
+}
+@if (ViewBag.User == null)
+{
+    <h1>Logged out</h1>
+}
+<div id="wrapper">
+    <div class="loginDiv">
+        <h3>Login</h3>
+        <form asp-action="Login" method="post">
+            <label>Name</label><br />
+            <input asp-for="Name" required /><br />
+            <label>Password</label><br />
+            <input type="password" asp-for="Password" required /><br />
+            <button type="submit">Login</button>
+        </form>
+    </div>
+
+    <div class="registerDiv">
+        <h3>Register</h3>
+        <form asp-action="Register" method="post">
+            <label>Name</label><br />
+            <input asp-for="Name" required /><br />
+            <label>Password</label><br />
+            <input type="password" asp-for="Password" required /><br />
+            <label>Confirm password</label><br />
+            <input type="password" asp-for="ConfirmPassword" required /><br />
+            <button type="submit">Register</button>
+        </form>
+    </div>
 </div>
-<form asp-action="Page2" method="post">
-    <label>Name</label>
-    <input asp-for="Name"/>
-    <label>Password</label>
-    <input asp-for="Password"/>
-    <button type="submit">Submit</button>
-</form>
-<a href="@Url.Action("Page2","Home")"> Go to Page2 </a>
+
+@if (ViewBag.Message != null)
+{
+    <script type="text/javascript">
+        window.onload = function () {
+            alert("@ViewBag.Message")
+        }
+    </script>
+}
+
