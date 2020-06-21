@@ -91,51 +91,60 @@ namespace Tessellation.Controllers
 
         public IActionResult Register(User user)
         {
-            QueryHandler.connect(_configuration);
-
-            if (QueryHandler.executePasswordSelect(user.Name).Equals("NULL"))
+            if (user.Password.Equals(user.ConfirmPassword))
             {
-                QueryHandler.insertUsernameAndPassword(user.Name, user.Password);
-                //TempData["message"] = "registration was succesfull";
-                HttpContext.Session.SetString("sessionUser", user.Name);
-            }
-            else
-            {
-                //try to register with existing username
-                TempData["message"] =  "username is not available";
+                QueryHandler.connect(_configuration);
+
+                if (QueryHandler.executePasswordSelect(user.Name).Equals("NULL"))
+                {
+                    QueryHandler.insertUsernameAndPassword(user.Name, user.Password);
+                    //TempData["message"] = "registration was succesfull";
+                    HttpContext.Session.SetString("sessionUser", user.Name);
+                }
+                else
+                {
+                    //try to register with existing username
+                    TempData["message"] = "username is not available";
 
 
-                return RedirectToAction("Index");
-            }
-            //az authentikációt át kellene rakni a loginba
-            var tessellationClaims = new List<Claim>()
+                    return RedirectToAction("Index");
+                }
+                //az authentikációt át kellene rakni a loginba
+                var tessellationClaims = new List<Claim>()
             {
                 new Claim(ClaimTypes.Name, user.Name)
             };
 
-            var tessellationIdentity = new ClaimsIdentity(tessellationClaims, "Tessellation Identity");
-            var userPrincipal = new ClaimsPrincipal(tessellationIdentity);
+                var tessellationIdentity = new ClaimsIdentity(tessellationClaims, "Tessellation Identity");
+                var userPrincipal = new ClaimsPrincipal(tessellationIdentity);
 
-            HttpContext.SignInAsync(userPrincipal);
+                HttpContext.SignInAsync(userPrincipal);
 
 
-            //decrypt cookie
-            //var provider = DataProtectionProvider.Create(new DirectoryInfo(@"C:\temp-keys\"));
+                //decrypt cookie
+                //var provider = DataProtectionProvider.Create(new DirectoryInfo(@"C:\temp-keys\"));
 
-            //string cookieValue = HttpContext.Request.Cookies["Tessellation.Cookie"];
-            //string userName = System.Security.Principal.WindowsIdentity.GetCurrent().Name;
+                //string cookieValue = HttpContext.Request.Cookies["Tessellation.Cookie"];
+                //string userName = System.Security.Principal.WindowsIdentity.GetCurrent().Name;
 
-            //var dataProtector = provider.CreateProtector(
-            //typeof(CookieAuthenticationMiddleware).FullName, "MyCookie", "v2");
+                //var dataProtector = provider.CreateProtector(
+                //typeof(CookieAuthenticationMiddleware).FullName, "MyCookie", "v2");
 
-            //UTF8Encoding specialUtf8Encoding = new UTF8Encoding(false, true);
-            //byte[] protectedBytes = Base64UrlTextEncoder.Decode(cookieValue);
-            //byte[] plainBytes = dataProtector.Unprotect(protectedBytes);
-            //string plainText = specialUtf8Encoding.GetString(plainBytes);
+                //UTF8Encoding specialUtf8Encoding = new UTF8Encoding(false, true);
+                //byte[] protectedBytes = Base64UrlTextEncoder.Decode(cookieValue);
+                //byte[] plainBytes = dataProtector.Unprotect(protectedBytes);
+                //string plainText = specialUtf8Encoding.GetString(plainBytes);
 
-            //return Content(plainText);
+                //return Content(plainText);
 
-            return RedirectToAction("Editor");
+                return RedirectToAction("Editor");
+            }
+            else
+            {
+                TempData["message"] = "password and confirm password are note the same!";
+                return RedirectToAction("Index");
+            }
+            
 
         }
 
