@@ -1,26 +1,128 @@
 ﻿var width = window.document.getElementById("container").clientWidth;
-var height = 600;
+var height = window.innerHeight;
 
 var stage = new Konva.Stage({
     container: 'container',
-    width:  width,
-    height: height,
+    width: width,
+    height: height * 0.9,
 });
 
 var layer = new Konva.Layer();
 
-var rect1 = new Konva.Rect({
-    x: (stage.width() / 2)-250,
-    y: (stage.height() / 2)-250,
+//add workplace
+var workplace = new Konva.Rect({
+    x: (stage.width() / 2) - 250,
+    y: (stage.height() / 2) - 250,
     width: 500,
     height: 500,
-    stroke: 'black',
-    strokeWidth: 4,
+    fill: 'white',
+    shadowBlur: 10,
+    shadowOffset: { x: 0, y: 0 },
+    shadowOpacity: 0.5,
 });
 // add the shape to the layer
-layer.add(rect1);
+layer.add(workplace);
+//add layer to the stage
+
+
+
+//toolbox
+//var toolbox = new Konva.Rect({
+//    x: 10,
+//    y: (stage.height() / 2) - 250,
+//    width: 120,
+//    height: 150,
+//    fill: 'grey',
+//    shadowColor: 'black',
+//    shadowBlur: 10,
+//    shadowOffset: { x: 0, y: 0 },
+//    shadowOpacity: 0.5,
+//});
+//// add the shape to the layer
+//layer.add(toolbox);
+
+var circle = new Konva.Circle({
+    x: 10 + 60,
+    y: (stage.height() / 2) - 220,
+    radius: 30,
+    stroke: 'white',
+    strokeWidth: 2,
+});
+
+// add the shape to the layer
+layer.add(circle);
+
+
+
+
 //add layer to the stage
 stage.add(layer);
+
+var circleIsClicked = false;
+
+circle.on('click', function () {
+    if (circleIsClicked) {
+        this.fill('grey');
+        layer.draw();
+        circleIsClicked = false;
+    }
+    else {
+        this.fill('white');
+        layer.draw();
+        circleIsClicked = true;
+    }
+});
+
+var counter = 0;
+
+
+
+//add shape if circle is clicked---------------------------------------------------------------------------------------------
+var group = new Konva.Group({});
+layer.add(group);
+
+layer.draw();
+
+// this function will return pointer position relative to the passed node
+function getRelativePointerPosition(node) {
+    var transform = node.getAbsoluteTransform().copy();
+    // to detect relative position we need to invert transform
+    transform.invert();
+
+    // get pointer (say mouse or touch) position
+    var pos = node.getStage().getPointerPosition();
+
+    // now we can find relative point
+    return transform.point(pos);
+}
+
+workplace.on('click', function () {
+    if (circleIsClicked) {
+    var pos = getRelativePointerPosition(group);
+    var shape = new Konva.Circle({
+        x: pos.x,
+        y: pos.y,
+        fill: 'red',
+        radius: 20,
+    });
+
+    group.add(shape);
+    layer.batchDraw();
+    }
+});
+
+
+
+
+//function createCircle() {
+//    layer.add(new Konva.Circle({
+//        x: ,
+//        y: 50 + 40,
+//        radius: 30,
+//        fill: 'white',
+//    }));
+//}
+
 
 //var circle = new Konva.Circle({
 //    x: 700,
