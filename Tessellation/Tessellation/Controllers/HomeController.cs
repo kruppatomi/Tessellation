@@ -65,7 +65,7 @@ namespace Tessellation.Controllers
         //}
 
 
-        [Authorize]
+        //[Authorize]
         public IActionResult Editor()
         {
             return View();
