@@ -1,5 +1,6 @@
 ﻿var width = window.document.getElementById("container").clientWidth;
 var height = window.innerHeight;
+var pointObjects = [];
 var points = [];
 
 var stage = new Konva.Stage({
@@ -17,6 +18,7 @@ var workplace = new Konva.Rect({
     width: 500,
     height: 500,
     fill: 'rgb(100,100,100)',
+    id: 'workplace',
 });
 // add the shape to the layer
 layer.add(workplace);
@@ -56,56 +58,66 @@ layer.add(circle);
 //add layer to the stage
 stage.add(layer);
 
-var circleIsClicked = false;
+//var circleIsClicked = false;
 
-circle.on('click', function () {
-    if (circleIsClicked) {
-        this.fill('grey');
-        layer.draw();
-        circleIsClicked = false;
-    }
-    else {
-        this.fill('white');
-        layer.draw();
-        circleIsClicked = true;
-    }
-});
+//circle.on('click', function () {
+//    if (circleIsClicked) {
+//        this.fill('grey');
+//        layer.draw();
+//        circleIsClicked = false;
+//    }
+//    else {
+//        this.fill('white');
+//        layer.draw();
+//        circleIsClicked = true;
+//    }
+//});
 
 var counter = 0;
 
 
 
 //add shape if circle is clicked---------------------------------------------------------------------------------------------
-var group = new Konva.Group({});
-layer.add(group);
+//var group = new Konva.Group({});
+//layer.add(group);
 
-layer.draw();
+//layer.draw();
 
 // this function will return pointer position relative to the passed node
-function getRelativePointerPosition(node) {
-    var transform = node.getAbsoluteTransform().copy();
-    // to detect relative position we need to invert transform
-    transform.invert();
+//function getRelativePointerPosition(node) {
+//    var transform = node.getAbsoluteTransform().copy();
+//    // to detect relative position we need to invert transform
+//    transform.invert();
 
-    // get pointer (say mouse or touch) position
-    var pos = node.getStage().getPointerPosition();
+//    // get pointer (say mouse or touch) position
+//    var pos = node.getStage().getPointerPosition();
 
-    // now we can find relative point
-    return transform.point(pos);
-}
+//    // now we can find relative point
+//    return transform.point(pos);
+//}
 
 //add first two dots
 //first
+var i;
 var starterpoint1 = new Konva.Circle({
     x: workplace.x() + (workplace.width() / 4),
     y: workplace.y() + (workplace.height()/2),
     draggable: true,
     fill: 'red',
     radius: 5,
+    id: 'point' + counter,
+    //dragBoundFunc: function () {
+    //    //alert(this.id());
+    //    var index = pointObjects.findIndex(x => x.id === this.id());
+    //    points[index] = [this.x(), this.y()];
+    //    moved(index);
+    //    },
 });
 //add points to voronoi
+pointObjects.push(starterpoint1);
 points.push([starterpoint1.x(), starterpoint1.y()])
 layer.add(starterpoint1);
+counter++;
 //second
 var starterpoint2 = new Konva.Circle({
     x: workplace.x() + (workplace.width()/4)*3,
@@ -113,32 +125,121 @@ var starterpoint2 = new Konva.Circle({
     draggable: true,
     fill: 'red',
     radius: 5,
+    id: 'point' + counter,
+    //dragBoundFunc: function () {
+    //    //alert(this.id());
+    //    var index = pointObjects.findIndex(x => x.id === this.id());
+    //    points[index] = [this.x(), this.y()];
+    //    moved(index);
+    //},
 });
 //add points to voronoi
+pointObjects.push(starterpoint2);
 points.push([starterpoint2.x(), starterpoint2.y()])
 layer.add(starterpoint2);
 
 layer.draw();
 
 
-workplace.on('click', function () {
-    if (circleIsClicked) {
-    var pos = getRelativePointerPosition(group);
-    var shape = new Konva.Circle({
-        x: pos.x,
-        y: pos.y,
-        draggable: true,
-        fill: 'red',
-        radius: 5,
-    });
-    //add points to voronoi
-    points.push([shape.x(), shape.y()])
-        //alert('id:' + shape.id() + ', xpos:' + shape.x() +", ypos:" +shape.y())
+//workplace.on('click', function () {
+//    if (circleIsClicked) {
+//    var pos = getRelativePointerPosition(group);
+//    var shape = new Konva.Circle({
+//        x: pos.x,
+//        y: pos.y,
+//        draggable: true,
+//        fill: 'red',
+//        radius: 5,
+//    });
+//    //add points to voronoi
+//    points.push([shape.x(), shape.y()])
+//        //alert('id:' + shape.id() + ', xpos:' + shape.x() +", ypos:" +shape.y())
 
-    layer.add(shape);
-    layer.batchDraw();
+//    layer.add(shape);
+//    layer.batchDraw();
+//    }
+//})
+
+
+//voronoi--------------------------------------------------------------------------------------------------------------
+//var canvas = d3.select("canvas").on("click", moved).node(),
+var canvas = d3.select("canvas").on("click", moved).node(),
+    context = canvas.getContext("2d"),
+    width = stage.width(),
+    height = stage.height();
+//canvas.style.position = "absolute";
+//canvas.style.left = workplace.x() + 'px';
+//canvas.style.top = workplace.y() + 'px';
+
+var sites = points;
+
+//.map(function (d) { return [Math.random() * width, Math.random() * height]; });
+
+var voronoi = d3.voronoi()
+    .extent([[-1, -1], [width + 1, height + 1]]);
+
+redraw();
+
+//ezt kell átírni hogy drag event közben frissüljön
+function moved() {
+    sites[0] = d3.mouse(this);
+    redraw();
+}
+
+function redraw() {
+    var diagram = voronoi(sites),
+        links = diagram.links(),
+        polygons = diagram.polygons();
+
+    context.clearRect(0, 0, width, height);
+    context.beginPath();
+    drawCell(polygons[0]);
+    //context.fillStyle = "#000";
+    //context.fill();
+
+    context.beginPath();
+    for (var i = 0, n = polygons.length; i < n; ++i) drawCell(polygons[i]);
+    context.strokeStyle = "#000";
+    context.stroke();
+
+    context.beginPath();
+    for (var i = 0, n = links.length; i < n; ++i) drawLink(links[i]);
+    context.strokeStyle = "rgba(0,0,0,0.4)";
+    context.stroke();
+
+    context.beginPath();
+    drawSite(sites[0]);
+    context.fillStyle = "#fff";
+    context.fill();
+
+    context.beginPath();
+    for (var i = 1, n = sites.length; i < n; ++i) drawSite(sites[i]);
+    context.fill();
+    context.strokeStyle = "#fff";
+    context.stroke();
+}
+
+function drawSite(site) {
+    context.moveTo(site[0] + 2.5, site[1]);
+    context.arc(site[0], site[1], 2.5, 0, 2 * Math.PI, false);
+}
+
+function drawLink(link) {
+    context.moveTo(link.source[0], link.source[1]);
+    context.lineTo(link.target[0], link.target[1]);
+}
+
+function drawCell(cell) {
+    if (!cell) return false;
+    context.moveTo(cell[0][0], cell[0][1]);
+    for (var j = 1, m = cell.length; j < m; ++j) {
+        context.lineTo(cell[j][0], cell[j][1]);
     }
-})
+    context.closePath();
+    return true;
+}
+
+
 
 //workplace.on('click', function () {
 //    var shapes = stage.find('Circle');

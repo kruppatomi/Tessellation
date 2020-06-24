@@ -5,54 +5,123 @@
 <script src="https://d3js.org/d3.v4.min.js"></script>
 @*<script src="~/js/circle.js"></script>*@
 @*<script src="~/js/voronoi.js"></script>*@
+@*touchmove mousemove*@
 <script>
     var canvas = d3.select("canvas").on("touchmove mousemove", moved).node(),
         context = canvas.getContext("2d"),
         width = canvas.width,
         height = canvas.height;
 
-    var sites = [[100, 100], [200, 200]];
+
+    var isSelect = false;
+    var isGrab = false;
+
+    var sites = [[100, 100], [200, 200], [200, 100], [300, 200]];
 
     //.map(function (d) { return [Math.random() * width, Math.random() * height]; });
 
     var voronoi = d3.voronoi()
         .extent([[-1, -1], [width + 1, height + 1]]);
 
-    redraw();
+    redraw(0);
 
-    function moved() {
-        //sites[0] = d3.mouse(this);
-        redraw();
+    Math.dist = function (x1, y1, x2, y2) {
+        if (!x2) x2 = 0;
+        if (!y2) y2 = 0;
+        return Math.sqrt((x2 - x1) * (x2 - x1) + (y2 - y1) * (y2 - y1));
     }
 
-    function redraw() {
+    Math.dist(0, 0, 3, 4);
+
+    function SelectNearest() {
+        var nearestP = 0;
+        var smallestDistance = Math.dist(sites[0][0], sites[0][0], d3.mouse(this)[0], d3.mouse(this)[1]);
+        var i;
+        for (i = 1; i < sites.length; i++) {
+            if (Math.dist(sites[i][0], sites[i][1], d3.mouse(this)[0], d3.mouse(this)[1]) < smallestDistance) {
+                smallestDistance = Math.dist(sites[i][0], sites[i][1], d3.mouse(this)[0], d3.mouse(this)[1])
+                nearestP = i
+            }
+        }
+        return nearestP;
+    }
+
+    function moved() {
+        //calculate nearest
+        var nearestP = 0;
+        if (isSelect) {
+            var smallestDistance = Math.dist(sites[0][0], sites[0][0], d3.mouse(this)[0], d3.mouse(this)[1]);
+            var i;
+            for (i = 1; i < sites.length; i++) {
+                if (Math.dist(sites[i][0], sites[i][1], d3.mouse(this)[0], d3.mouse(this)[1]) < smallestDistance) {
+                    smallestDistance = Math.dist(sites[i][0], sites[i][1], d3.mouse(this)[0], d3.mouse(this)[1])
+                    nearestP = i
+                }
+            }
+
+            coloriseSelected(nearestP);
+        }
+        if (isGrab) {
+            sites[nearestP] = d3.mouse(this);
+            redraw(nearestP);
+        }
+        //move selected
+
+
+        //sites[nearestP] = d3.mouse(this);
+        //redraw(nearestP);
+    }
+
+    function coloriseSelected(near) {
+        context.beginPath();
+        for (var i = 0, n = sites.length; i < n; ++i) drawSite(sites[i]);
+        context.fillStyle = "#000";
+        context.fill();
+        context.strokeStyle = "#fff";
+        context.stroke();
+
+        context.beginPath();
+        drawSite(sites[near]);
+        context.fillStyle = "#f00";
+        context.fill();
+        //iadded this
+        context.strokeStyle = "#fff";
+        context.stroke();
+    }
+
+    function redraw(near) {
         var diagram = voronoi(sites),
             links = diagram.links(),
             polygons = diagram.polygons();
 
         context.clearRect(0, 0, width, height);
         context.beginPath();
-        drawCell(polygons[0]);
-        context.fillStyle = "#f00";
-        context.fill();
+        drawCell(polygons[near]);
+        //context.fillStyle = "#f00";
+        //context.fill();
 
         context.beginPath();
         for (var i = 0, n = polygons.length; i < n; ++i) drawCell(polygons[i]);
         context.strokeStyle = "#000";
         context.stroke();
 
-        context.beginPath();
-        for (var i = 0, n = links.length; i < n; ++i) drawLink(links[i]);
-        context.strokeStyle = "rgba(0,0,0,0.2)";
-        context.stroke();
+
+        //links between dots
+        //context.beginPath();
+        //for (var i = 0, n = links.length; i < n; ++i) drawLink(links[i]);
+        //context.strokeStyle = "rgba(0,0,0,0.2)";
+        //context.stroke();
+
+        //context.beginPath();
+        //drawSite(sites[near]);
+        //context.fillStyle = "#000";
+        //context.fill();
+        ////iadded this
+        //context.strokeStyle = "#fff";
+        //context.stroke();
 
         context.beginPath();
-        drawSite(sites[0]);
-        context.fillStyle = "#fff";
-        context.fill();
-
-        context.beginPath();
-        for (var i = 1, n = sites.length; i < n; ++i) drawSite(sites[i]);
+        for (var i = 0, n = sites.length; i < n; ++i) drawSite(sites[i]);
         context.fillStyle = "#000";
         context.fill();
         context.strokeStyle = "#fff";
@@ -78,4 +147,18 @@
         context.closePath();
         return true;
     }
+
+    document.addEventListener('keydown', function (event) {
+        if (event.keyCode == 83) {
+            isSelect = true;
+        }
+        else if (event.keyCode == 71) {
+            if (isGrab) {
+                isGrab = false;
+            }
+            else {
+                isGrab = true;
+            }
+        }
+    });
 </script>
