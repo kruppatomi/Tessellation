@@ -1,5 +1,6 @@
 ﻿var width = window.document.getElementById("container").clientWidth;
 var height = window.innerHeight;
+var points = [];
 
 var stage = new Konva.Stage({
     container: 'container',
@@ -15,10 +16,7 @@ var workplace = new Konva.Rect({
     y: (stage.height() / 2) - 250,
     width: 500,
     height: 500,
-    fill: 'white',
-    shadowBlur: 10,
-    shadowOffset: { x: 0, y: 0 },
-    shadowOpacity: 0.5,
+    fill: 'rgb(100,100,100)',
 });
 // add the shape to the layer
 layer.add(workplace);
@@ -96,22 +94,113 @@ function getRelativePointerPosition(node) {
     return transform.point(pos);
 }
 
+//add first two dots
+//first
+var starterpoint1 = new Konva.Circle({
+    x: workplace.x() + (workplace.width() / 4),
+    y: workplace.y() + (workplace.height()/2),
+    draggable: true,
+    fill: 'red',
+    radius: 5,
+});
+//add points to voronoi
+points.push([starterpoint1.x(), starterpoint1.y()])
+layer.add(starterpoint1);
+//second
+var starterpoint2 = new Konva.Circle({
+    x: workplace.x() + (workplace.width()/4)*3,
+    y: workplace.y() + (workplace.height() / 2),
+    draggable: true,
+    fill: 'red',
+    radius: 5,
+});
+//add points to voronoi
+points.push([starterpoint2.x(), starterpoint2.y()])
+layer.add(starterpoint2);
+
+layer.draw();
+
+
 workplace.on('click', function () {
     if (circleIsClicked) {
     var pos = getRelativePointerPosition(group);
     var shape = new Konva.Circle({
         x: pos.x,
         y: pos.y,
+        draggable: true,
         fill: 'red',
-        radius: 20,
+        radius: 5,
     });
+    //add points to voronoi
+    points.push([shape.x(), shape.y()])
+        //alert('id:' + shape.id() + ', xpos:' + shape.x() +", ypos:" +shape.y())
 
-    group.add(shape);
+    layer.add(shape);
     layer.batchDraw();
     }
-});
+})
+
+//workplace.on('click', function () {
+//    var shapes = stage.find('Circle');
+//    alert(shapes);
+//})
 
 
+//-----------------------------------------------------------------------------------------------------------------------------
+//show position
+//var text = new Konva.Text({
+//    x: 5,
+//    y: 200,
+//});
+//layer.add(text);
+//updateText();
+
+//// create new transformer
+//var tr = new Konva.Transformer();
+//var tr2 = new Konva.Transformer();
+//layer.add(tr);
+//layer.add(tr2);
+//tr.nodes([circle]);
+//tr2.nodes([circle2]);
+//layer.draw();
+
+
+
+//circle.on('transformstart', function () {
+//    console.log('transform start');
+//});
+
+//circle.on('dragmove', function () {
+//    updateText();
+//});
+//circle.on('transform', function () {
+//    updateText();
+//    console.log('transform');
+//});
+
+//rect.on('transformend', function () {
+//    console.log('transform end');
+//});
+
+//function updateText() {
+//    var lines = [
+//        'x: ' + circle.x(),
+//        'y: ' + circle.y(),
+//        'rotation: ' + circle.rotation(),
+//        'width: ' + circle.width(),
+//        'height: ' + circle.height(),
+//        'scaleX: ' + circle.scaleX(),
+//        'scaleY: ' + circle.scaleY(),
+//    ];
+//    text.text(lines.join('\n'));
+//    layer.batchDraw();
+//}
+
+//function writeMessage(message) {
+//    text.text(message);
+//    layer.draw();
+//}
+//------------------------------------------------------------------------------------------------------------------------------
 
 
 //function createCircle() {
