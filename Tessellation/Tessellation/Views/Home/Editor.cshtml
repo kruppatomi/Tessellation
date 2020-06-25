@@ -1,4 +1,319 @@
-﻿@*
-    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-*@
-<h1>This is the editor page</h1>
+﻿@*<h1>This is the editor page</h1>*@
+@if (ViewBag.User != null)
+{
+    <div id="topbar">
+        <div id="h1">
+            <h1>Logged in as @ViewBag.User</h1>
+        </div>
+        <div id="loButton">
+            <button id="logoutButton" onclick="window.location.href='@Url.Action("Logout", "Home")'">Logout</button>
+        </div>
+    </div>
+}
+<div id="editorWrapper">
+    <div id="toolbar">
+        <h1>Commands:</h1>
+        <label>A: add new point</label><br />
+        <label>S: select a point</label><br />
+        <label>G: grab selected</label><br />
+        <label>D: delete selected</label><br />
+        <h1>Tessellate:</h1>
+        <label>width:</label><br />
+        <input required value="2" /><br />
+        <label>height:</label><br />
+        <input required value="2" /><br />
+        <button onclick="makeTessellation()">Let's tesselate!</button>
+
+    </div>
+    <canvas id="canvas" width="500" height="500"></canvas>
+    <script src="https://d3js.org/d3.v4.min.js"></script>
+    <script src="http://hongru.github.io/proj/canvas2image/canvas2image.js"></script>
+    @*<script src="~/js/circle.js"></script>*@
+    @*<script src="~/js/voronoi.js"></script>*@
+    @*touchmove mousemove*@
+    <script>
+        var canvas = d3.select("canvas").on("touchmove mousemove", moved).node(),
+            context = canvas.getContext("2d"),
+            width = canvas.width,
+            height = canvas.height;
+
+        canvas.width = 500;
+        canvas.height = 500;
+
+
+
+        var isSelect = false;
+        var isGrab = false;
+        var isAdd = false;
+        var isDelete = false;
+
+        var newPointWasAdded = false;
+
+        var sites = [[100, 100], [200, 200], [200, 100], [300, 200]];
+
+        //.map(function (d) { return [Math.random() * width, Math.random() * height]; });
+
+        var voronoi = d3.voronoi()
+            .extent([[-1, -1], [width + 1, height + 1]]);
+
+        redraw(0);
+
+        Math.dist = function (x1, y1, x2, y2) {
+            if (!x2) x2 = 0;
+            if (!y2) y2 = 0;
+            return Math.sqrt((x2 - x1) * (x2 - x1) + (y2 - y1) * (y2 - y1));
+        }
+
+        Math.dist(0, 0, 3, 4);
+
+        function SelectNearest() {
+            var nearestP = 0;
+            var smallestDistance = Math.dist(sites[0][0], sites[0][0], d3.mouse(this)[0], d3.mouse(this)[1]);
+            var i;
+            for (i = 1; i < sites.length; i++) {
+                if (Math.dist(sites[i][0], sites[i][1], d3.mouse(this)[0], d3.mouse(this)[1]) < smallestDistance) {
+                    smallestDistance = Math.dist(sites[i][0], sites[i][1], d3.mouse(this)[0], d3.mouse(this)[1])
+                    nearestP = i
+                }
+            }
+            return nearestP;
+        }
+
+        function moved() {
+            //calculate nearest
+            var nearestP = 0;
+            if (isSelect) {
+                var smallestDistance = Math.dist(sites[0][0], sites[0][0], d3.mouse(this)[0], d3.mouse(this)[1]);
+                var i;
+                for (i = 1; i < sites.length; i++) {
+                    if (Math.dist(sites[i][0], sites[i][1], d3.mouse(this)[0], d3.mouse(this)[1]) < smallestDistance) {
+                        smallestDistance = Math.dist(sites[i][0], sites[i][1], d3.mouse(this)[0], d3.mouse(this)[1])
+                        nearestP = i
+                    }
+                }
+
+                coloriseSelected(nearestP);
+            }
+            if (isGrab && isSelect) {
+                sites[nearestP] = d3.mouse(this);
+                redraw(nearestP);
+            }
+
+            if (isDelete && isSelect) {
+                sites.splice(nearestP, 1);
+                redraw(nearestP);
+                isDelete = false;
+            }
+
+            if (isAdd) {
+                if (!newPointWasAdded) {
+                    sites.push(d3.mouse(this));
+                    newPointWasAdded = true;
+                }
+                sites[sites.length - 1] = d3.mouse(this);
+                redraw(sites.length - 1);
+            }
+            //move selected
+
+
+            //sites[nearestP] = d3.mouse(this);
+            //redraw(nearestP);
+        }
+
+        function coloriseSelected(near) {
+            context.beginPath();
+            for (var i = 0, n = sites.length; i < n; ++i) drawSite(sites[i]);
+            context.fillStyle = "#000";
+            context.fill();
+            context.strokeStyle = "#fff";
+            context.stroke();
+
+            context.beginPath();
+            drawSite(sites[near]);
+            context.fillStyle = "#f00";
+            context.fill();
+            //iadded this
+            context.strokeStyle = "#fff";
+            context.stroke();
+        }
+
+        function redraw(near) {
+            var diagram = voronoi(sites),
+                links = diagram.links(),
+                polygons = diagram.polygons();
+
+            context.clearRect(0, 0, width, height);
+            context.beginPath();
+            drawCell(polygons[near]);
+            //context.fillStyle = "#f00";
+            //context.fill();
+
+            context.beginPath();
+            for (var i = 0, n = polygons.length; i < n; ++i) drawCell(polygons[i]);
+            context.strokeStyle = "#000";
+            context.stroke();
+
+
+            //links between dots
+            //context.beginPath();
+            //for (var i = 0, n = links.length; i < n; ++i) drawLink(links[i]);
+            //context.strokeStyle = "rgba(0,0,0,0.2)";
+            //context.stroke();
+
+            //context.beginPath();
+            //drawSite(sites[near]);
+            //context.fillStyle = "#000";
+            //context.fill();
+            ////iadded this
+            //context.strokeStyle = "#fff";
+            //context.stroke();
+
+            context.beginPath();
+            for (var i = 0, n = sites.length; i < n; ++i) drawSite(sites[i]);
+            context.fillStyle = "#000";
+            context.fill();
+            context.strokeStyle = "#fff";
+            context.stroke();
+        }
+
+        function drawSite(site) {
+            context.moveTo(site[0] + 2.5, site[1]);
+            context.arc(site[0], site[1], 2.5, 0, 2 * Math.PI, false);
+        }
+
+        function drawLink(link) {
+            context.moveTo(link.source[0], link.source[1]);
+            context.lineTo(link.target[0], link.target[1]);
+        }
+
+        function drawCell(cell) {
+            if (!cell) return false;
+            context.moveTo(cell[0][0], cell[0][1]);
+            for (var j = 1, m = cell.length; j < m; ++j) {
+                context.lineTo(cell[j][0], cell[j][1]);
+            }
+            context.closePath();
+            return true;
+        }
+
+        //drawforsave-------------------------------------------------------------------------------------------------------------
+        function drawforSave() {
+            var diagram = voronoi(sites),
+                polygons = diagram.polygons();
+
+            context.clearRect(0, 0, width, height);
+
+            context.beginPath();
+            for (var i = 0, n = polygons.length; i < n; ++i) drawCell(polygons[i]);
+            context.strokeStyle = "#000";
+            context.stroke();
+        }
+
+        //keyboard events----------------------------------------------------------------------------------------------------------
+        document.addEventListener('keydown', function (event) {
+            if (event.keyCode == 83) {
+                if (isSelect) {
+                    isSelect = false;
+
+                    context.beginPath();
+                    for (var i = 0, n = sites.length; i < n; ++i) drawSite(sites[i]);
+                    context.fillStyle = "#000";
+                    context.fill();
+                    context.strokeStyle = "#fff";
+                    context.stroke();
+                }
+                else {
+                    isSelect = true;
+                }
+            }
+            else if (event.keyCode == 71) {
+                if (isGrab) {
+                    isGrab = false;
+                }
+                else {
+                    isGrab = true;
+                }
+            }
+            else if (event.keyCode == 65) {
+                if (isAdd) {
+                    isAdd = false;
+                    newPointWasAdded = false;
+                }
+                else {
+                    isAdd = true;
+                }
+            }
+            else if (event.keyCode == 68) {
+                isDelete = true;
+            }
+        })
+
+        function makeTessellation() {
+            document.getElementById('pictureContainer').textContent = '';
+            drawforSave();
+            var pDiv = document.createElement('div');
+            pDiv.id = 'picture';
+
+            var innerImg1 = document.createElement('img');
+            innerImg1.id = 'theimager';
+
+            var innerImg2 = document.createElement('img');
+            innerImg2.id = 'theimagel';
+
+            var innerImg3 = document.createElement('img');
+            innerImg3.id = 'theimagebr';
+
+            var innerImg4 = document.createElement('img');
+            innerImg4.id = 'theimagebl';
+
+            pDiv.appendChild(innerImg1);
+            pDiv.appendChild(innerImg2);
+            pDiv.appendChild(innerImg3);
+            pDiv.appendChild(innerImg4);
+            //var dCanvas = document.createElement('canvas');
+            //pDiv.id = 'dCanvas';
+            document.getElementById('pictureContainer').appendChild(pDiv);
+            //document.getElementById('pictureContainer').appendChild(dCanvas);
+
+            //var canvas = document.getElementById("dCanvas");
+            //var ctx = canvas.getContext("2d");
+            //var img = document.getElementById("scream");
+            //ctx.drawImage(img, 10, 10);
+
+            //convert pictures
+            var canvas = document.getElementById("canvas");
+            document.getElementById("theimager").src = canvas.toDataURL();
+            document.getElementById("theimagel").src = canvas.toDataURL();
+            document.getElementById("theimagebr").src = canvas.toDataURL();
+            document.getElementById("theimagebl").src = canvas.toDataURL();
+            redraw(0);
+            flipImages();
+        }
+
+        function flipImages() {
+            //r
+            //document.getElementById('theimager').style.width = "300px";
+            //document.getElementById('theimager').style.hight = "300px";
+            //l
+            document.getElementById('theimagel').style.webkitTransform = "scaleX(-1)";
+            document.getElementById('theimagel').style.transform = "scaleX(-1)";
+            //br
+            document.getElementById('theimagebr').style.webkitTransform = "scaleY(-1)";
+            document.getElementById('theimagebr').style.transform = "scaleY(-1)";
+            //bl
+            var bl = document.getElementById('theimagebl');
+            bl.style.transform = "rotateX(180deg) rotateY(180deg)";
+
+
+
+        };
+    </script>
+</div>
+<div id="pictureContainer">
+    @*<div id="picture">
+        <image id="theimager"></image>
+        <image id="theimagel"></image>
+        <image id="theimagebr"></image>
+        <image id="theimagebl"></image>
+    </div>*@
+</div>

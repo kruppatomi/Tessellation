@@ -4,6 +4,8 @@
 body {
     background-color: lightgrey;
     font-family: 'Inter UI', sans-serif;
+    margin: 0;
+    padding: 0;
 }
 
 h1 {
@@ -15,7 +17,7 @@ h1 {
 #wrapper {
     display: flex;
     text-align: center;
-    margin-top:60px;
+    margin-top:40px;
 
 
 }
@@ -82,4 +84,107 @@ h1 {
 
 textarea:focus, input:focus {
     outline: none;
+}
+
+#canvas {
+    background-color: gray;
+    box-shadow: 0px 0px 30px -10px;
+    text-align: left;
+    margin-right: auto;
+}
+
+#toolbar {
+    background-color: white;
+    padding: 10px;
+    text-align: left;
+    margin-left: auto;
+    box-shadow: 0px 0px 35px -12px;
+}
+
+#toolbar input {
+    width:70px;
+}
+
+#toolbar button {
+    border: none;
+    background-color: black;
+    color: white;
+    font-size: 14px;
+    font-weight: 800;
+    margin-top:10px;
+}
+
+#toolbar h1{
+    margin-top:45px;
+}
+
+#logoutButton {
+    border: none;
+    background-color: black;
+    color: white;
+    font-size: 14px;
+    font-weight: 800;
+    margin:15px;
+}
+
+#topbar {
+    display: flex;
+    text-align: center;
+    margin-top:10px;
+}
+
+#topbar #h1 {
+    margin-left: auto;
+    text-align: left;
+    margin-top:3px;
+}
+
+#topbar #loButton {
+    margin-right: auto;
+    text-align: left;
+}
+
+#editorWrapper {
+    display: flex;
+    text-align: center;
+    margin-top: 10px;
+}
+
+#loggedOuth1 {
+    text-align: center;
+    margin-top: 40px;
+}
+
+#picture {
+    box-shadow: 0px 0px 30px -10px;
+    width:1000px;
+    background-color: white;
+    text-align: center;
+    margin: 30px;
+    margin-left:auto;
+    margin-right:auto;
+}
+
+#theimager, #theimagel {
+    display:inline-block;
+}
+
+#theimagebr, #theimagebl {
+    display: inline-block;
+}
+
+#theimager {
+    margin-left:auto;
+}
+
+#theimagel {
+    margin-right: auto;
+}
+
+#theimagebr {
+    margin-left: auto;
+}
+
+#theimagebl {
+    margin-right: auto;
 }
