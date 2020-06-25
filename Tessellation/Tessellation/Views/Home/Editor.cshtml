@@ -1,57 +1,62 @@
 ﻿
 <h1>This is the editor page</h1>
-<div id="container"></div>
-<canvas width="960" height="500"></canvas>
-<script src="https://d3js.org/d3.v4.min.js"></script>
-@*<script src="~/js/circle.js"></script>*@
-@*<script src="~/js/voronoi.js"></script>*@
-@*touchmove mousemove*@
-<script>
-    var canvas = d3.select("canvas").on("touchmove mousemove", moved).node(),
-        context = canvas.getContext("2d"),
-        width = canvas.width,
-        height = canvas.height;
+<div id="wrapper">
+    <div id="toolbar">
+        <h1>Commands:</h1>
+        <label>A: add new point</label><br />
+        <label>S: select a point</label><br />
+        <label>G: grab selected</label><br />
+        <label>D: delete selected</label><br />
+        <h1>Tessellate:</h1>
+        <label>width:</label><br />
+        <input required /><br />
+        <label>height:</label><br />
+        <input required /><br />
+        <button type="submit">Let's tesselate!</button>
+
+    </div>
+    <canvas id="canvas" width="500" height="500"></canvas>
+    <script src="https://d3js.org/d3.v4.min.js"></script>
+    @*<script src="~/js/circle.js"></script>*@
+    @*<script src="~/js/voronoi.js"></script>*@
+    @*touchmove mousemove*@
+    <script>
+        var canvas = d3.select("canvas").on("touchmove mousemove", moved).node(),
+            context = canvas.getContext("2d"),
+            width = canvas.width,
+            height = canvas.height;
+
+        canvas.width = 500;
+        canvas.height = 500;
 
 
-    var isSelect = false;
-    var isGrab = false;
-    var isAdd = false;
-    var newPointWasAdded = false;
 
-    var sites = [[100, 100], [200, 200], [200, 100], [300, 200]];
+        var isSelect = false;
+        var isGrab = false;
+        var isAdd = false;
+        var isDelete = false;
 
-    //.map(function (d) { return [Math.random() * width, Math.random() * height]; });
+        var newPointWasAdded = false;
 
-    var voronoi = d3.voronoi()
-        .extent([[-1, -1], [width + 1, height + 1]]);
+        var sites = [[100, 100], [200, 200], [200, 100], [300, 200]];
 
-    redraw(0);
+        //.map(function (d) { return [Math.random() * width, Math.random() * height]; });
 
-    Math.dist = function (x1, y1, x2, y2) {
-        if (!x2) x2 = 0;
-        if (!y2) y2 = 0;
-        return Math.sqrt((x2 - x1) * (x2 - x1) + (y2 - y1) * (y2 - y1));
-    }
+        var voronoi = d3.voronoi()
+            .extent([[-1, -1], [width + 1, height + 1]]);
 
-    Math.dist(0, 0, 3, 4);
+        redraw(0);
 
-    function SelectNearest() {
-        var nearestP = 0;
-        var smallestDistance = Math.dist(sites[0][0], sites[0][0], d3.mouse(this)[0], d3.mouse(this)[1]);
-        var i;
-        for (i = 1; i < sites.length; i++) {
-            if (Math.dist(sites[i][0], sites[i][1], d3.mouse(this)[0], d3.mouse(this)[1]) < smallestDistance) {
-                smallestDistance = Math.dist(sites[i][0], sites[i][1], d3.mouse(this)[0], d3.mouse(this)[1])
-                nearestP = i
-            }
+        Math.dist = function (x1, y1, x2, y2) {
+            if (!x2) x2 = 0;
+            if (!y2) y2 = 0;
+            return Math.sqrt((x2 - x1) * (x2 - x1) + (y2 - y1) * (y2 - y1));
         }
-        return nearestP;
-    }
 
-    function moved() {
-        //calculate nearest
-        var nearestP = 0;
-        if (isSelect) {
+        Math.dist(0, 0, 3, 4);
+
+        function SelectNearest() {
+            var nearestP = 0;
             var smallestDistance = Math.dist(sites[0][0], sites[0][0], d3.mouse(this)[0], d3.mouse(this)[1]);
             var i;
             for (i = 1; i < sites.length; i++) {
@@ -60,138 +65,163 @@
                     nearestP = i
                 }
             }
-
-            coloriseSelected(nearestP);
-        }
-        if (isGrab && isSelect) {
-            sites[nearestP] = d3.mouse(this);
-            redraw(nearestP);
+            return nearestP;
         }
 
-        if (isAdd) {
-            if (!newPointWasAdded) {
-                sites.push(d3.mouse(this));
-                newPointWasAdded = true;
-            }
-            sites[sites.length-1] = d3.mouse(this);
-            redraw(sites.length - 1);
-        }
-        //move selected
-
-
-        //sites[nearestP] = d3.mouse(this);
-        //redraw(nearestP);
-    }
-
-    function coloriseSelected(near) {
-        context.beginPath();
-        for (var i = 0, n = sites.length; i < n; ++i) drawSite(sites[i]);
-        context.fillStyle = "#000";
-        context.fill();
-        context.strokeStyle = "#fff";
-        context.stroke();
-
-        context.beginPath();
-        drawSite(sites[near]);
-        context.fillStyle = "#f00";
-        context.fill();
-        //iadded this
-        context.strokeStyle = "#fff";
-        context.stroke();
-    }
-
-    function redraw(near) {
-        var diagram = voronoi(sites),
-            links = diagram.links(),
-            polygons = diagram.polygons();
-
-        context.clearRect(0, 0, width, height);
-        context.beginPath();
-        drawCell(polygons[near]);
-        //context.fillStyle = "#f00";
-        //context.fill();
-
-        context.beginPath();
-        for (var i = 0, n = polygons.length; i < n; ++i) drawCell(polygons[i]);
-        context.strokeStyle = "#000";
-        context.stroke();
-
-
-        //links between dots
-        //context.beginPath();
-        //for (var i = 0, n = links.length; i < n; ++i) drawLink(links[i]);
-        //context.strokeStyle = "rgba(0,0,0,0.2)";
-        //context.stroke();
-
-        //context.beginPath();
-        //drawSite(sites[near]);
-        //context.fillStyle = "#000";
-        //context.fill();
-        ////iadded this
-        //context.strokeStyle = "#fff";
-        //context.stroke();
-
-        context.beginPath();
-        for (var i = 0, n = sites.length; i < n; ++i) drawSite(sites[i]);
-        context.fillStyle = "#000";
-        context.fill();
-        context.strokeStyle = "#fff";
-        context.stroke();
-    }
-
-    function drawSite(site) {
-        context.moveTo(site[0] + 2.5, site[1]);
-        context.arc(site[0], site[1], 2.5, 0, 2 * Math.PI, false);
-    }
-
-    function drawLink(link) {
-        context.moveTo(link.source[0], link.source[1]);
-        context.lineTo(link.target[0], link.target[1]);
-    }
-
-    function drawCell(cell) {
-        if (!cell) return false;
-        context.moveTo(cell[0][0], cell[0][1]);
-        for (var j = 1, m = cell.length; j < m; ++j) {
-            context.lineTo(cell[j][0], cell[j][1]);
-        }
-        context.closePath();
-        return true;
-    }
-
-    //keyboard events
-    document.addEventListener('keydown', function (event) {
-        if (event.keyCode == 83) {
+        function moved() {
+            //calculate nearest
+            var nearestP = 0;
             if (isSelect) {
-                isSelect = false;
+                var smallestDistance = Math.dist(sites[0][0], sites[0][0], d3.mouse(this)[0], d3.mouse(this)[1]);
+                var i;
+                for (i = 1; i < sites.length; i++) {
+                    if (Math.dist(sites[i][0], sites[i][1], d3.mouse(this)[0], d3.mouse(this)[1]) < smallestDistance) {
+                        smallestDistance = Math.dist(sites[i][0], sites[i][1], d3.mouse(this)[0], d3.mouse(this)[1])
+                        nearestP = i
+                    }
+                }
 
-                context.beginPath();
-                for (var i = 0, n = sites.length; i < n; ++i) drawSite(sites[i]);
-                context.fillStyle = "#000";
-                context.fill();
-                context.strokeStyle = "#fff";
-                context.stroke();
+                coloriseSelected(nearestP);
             }
-            else {
-                isSelect = true;
+            if (isGrab && isSelect) {
+                sites[nearestP] = d3.mouse(this);
+                redraw(nearestP);
             }
-        }
-        else if (event.keyCode == 71) {
-            if (isGrab) {
-                isGrab = false;
+
+            if (isDelete && isSelect) {
+                sites.splice(nearestP, 1);
+                redraw(nearestP);
+                isDelete = false;
             }
-            else {
-                isGrab = true;
-            }
-        }
-        else if (event.keyCode == 65) {
+
             if (isAdd) {
-                isAdd = false;
-                newPointWasAdded = false;
+                if (!newPointWasAdded) {
+                    sites.push(d3.mouse(this));
+                    newPointWasAdded = true;
+                }
+                sites[sites.length - 1] = d3.mouse(this);
+                redraw(sites.length - 1);
             }
-            else {
-                isAdd = true;
-            }
+            //move selected
+
+
+            //sites[nearestP] = d3.mouse(this);
+            //redraw(nearestP);
         }
-    });
-</script>
+
+        function coloriseSelected(near) {
+            context.beginPath();
+            for (var i = 0, n = sites.length; i < n; ++i) drawSite(sites[i]);
+            context.fillStyle = "#000";
+            context.fill();
+            context.strokeStyle = "#fff";
+            context.stroke();
+
+            context.beginPath();
+            drawSite(sites[near]);
+            context.fillStyle = "#f00";
+            context.fill();
+            //iadded this
+            context.strokeStyle = "#fff";
+            context.stroke();
+        }
+
+        function redraw(near) {
+            var diagram = voronoi(sites),
+                links = diagram.links(),
+                polygons = diagram.polygons();
+
+            context.clearRect(0, 0, width, height);
+            context.beginPath();
+            drawCell(polygons[near]);
+            //context.fillStyle = "#f00";
+            //context.fill();
+
+            context.beginPath();
+            for (var i = 0, n = polygons.length; i < n; ++i) drawCell(polygons[i]);
+            context.strokeStyle = "#000";
+            context.stroke();
+
+
+            //links between dots
+            //context.beginPath();
+            //for (var i = 0, n = links.length; i < n; ++i) drawLink(links[i]);
+            //context.strokeStyle = "rgba(0,0,0,0.2)";
+            //context.stroke();
+
+            //context.beginPath();
+            //drawSite(sites[near]);
+            //context.fillStyle = "#000";
+            //context.fill();
+            ////iadded this
+            //context.strokeStyle = "#fff";
+            //context.stroke();
+
+            context.beginPath();
+            for (var i = 0, n = sites.length; i < n; ++i) drawSite(sites[i]);
+            context.fillStyle = "#000";
+            context.fill();
+            context.strokeStyle = "#fff";
+            context.stroke();
+        }
+
+        function drawSite(site) {
+            context.moveTo(site[0] + 2.5, site[1]);
+            context.arc(site[0], site[1], 2.5, 0, 2 * Math.PI, false);
+        }
+
+        function drawLink(link) {
+            context.moveTo(link.source[0], link.source[1]);
+            context.lineTo(link.target[0], link.target[1]);
+        }
+
+        function drawCell(cell) {
+            if (!cell) return false;
+            context.moveTo(cell[0][0], cell[0][1]);
+            for (var j = 1, m = cell.length; j < m; ++j) {
+                context.lineTo(cell[j][0], cell[j][1]);
+            }
+            context.closePath();
+            return true;
+        }
+
+        //keyboard events----------------------------------------------------------------------------------------------------------
+        document.addEventListener('keydown', function (event) {
+            if (event.keyCode == 83) {
+                if (isSelect) {
+                    isSelect = false;
+
+                    context.beginPath();
+                    for (var i = 0, n = sites.length; i < n; ++i) drawSite(sites[i]);
+                    context.fillStyle = "#000";
+                    context.fill();
+                    context.strokeStyle = "#fff";
+                    context.stroke();
+                }
+                else {
+                    isSelect = true;
+                }
+            }
+            else if (event.keyCode == 71) {
+                if (isGrab) {
+                    isGrab = false;
+                }
+                else {
+                    isGrab = true;
+                }
+            }
+            else if (event.keyCode == 65) {
+                if (isAdd) {
+                    isAdd = false;
+                    newPointWasAdded = false;
+                }
+                else {
+                    isAdd = true;
+                }
+            }
+            else if (event.keyCode == 68) {
+                isDelete = true;
+            }
+        });
+    </script>
+</div>
