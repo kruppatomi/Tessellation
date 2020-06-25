@@ -15,6 +15,8 @@
 
     var isSelect = false;
     var isGrab = false;
+    var isAdd = false;
+    var newPointWasAdded = false;
 
     var sites = [[100, 100], [200, 200], [200, 100], [300, 200]];
 
@@ -61,9 +63,18 @@
 
             coloriseSelected(nearestP);
         }
-        if (isGrab) {
+        if (isGrab && isSelect) {
             sites[nearestP] = d3.mouse(this);
             redraw(nearestP);
+        }
+
+        if (isAdd) {
+            if (!newPointWasAdded) {
+                sites.push(d3.mouse(this));
+                newPointWasAdded = true;
+            }
+            sites[sites.length-1] = d3.mouse(this);
+            redraw(sites.length - 1);
         }
         //move selected
 
@@ -148,9 +159,22 @@
         return true;
     }
 
+    //keyboard events
     document.addEventListener('keydown', function (event) {
         if (event.keyCode == 83) {
-            isSelect = true;
+            if (isSelect) {
+                isSelect = false;
+
+                context.beginPath();
+                for (var i = 0, n = sites.length; i < n; ++i) drawSite(sites[i]);
+                context.fillStyle = "#000";
+                context.fill();
+                context.strokeStyle = "#fff";
+                context.stroke();
+            }
+            else {
+                isSelect = true;
+            }
         }
         else if (event.keyCode == 71) {
             if (isGrab) {
@@ -158,6 +182,15 @@
             }
             else {
                 isGrab = true;
+            }
+        }
+        else if (event.keyCode == 65) {
+            if (isAdd) {
+                isAdd = false;
+                newPointWasAdded = false;
+            }
+            else {
+                isAdd = true;
             }
         }
     });
