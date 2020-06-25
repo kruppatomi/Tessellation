@@ -4,14 +4,14 @@
 @model Tessellation.Models.User
 
 
-@if (ViewBag.User != null)
+@*@if (ViewBag.User != null)
 {
     <h1>Logged in as @ViewBag.User</h1>
     <button onclick="window.location.href='@Url.Action("Logout", "Home")'">Logout</button>
-}
+}*@
 @if (ViewBag.User == null)
 {
-    <h1>Logged out</h1>
+    <h1 id="loggedOuth1">Logged out</h1>
 }
 <div id="wrapper">
     <div class="loginDiv">

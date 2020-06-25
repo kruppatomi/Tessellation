@@ -1,6 +1,16 @@
-﻿
-<h1>This is the editor page</h1>
-<div id="wrapper">
+﻿@*<h1>This is the editor page</h1>*@
+@if (ViewBag.User != null)
+{
+    <div id="topbar">
+        <div id="h1">
+            <h1>Logged in as @ViewBag.User</h1>
+        </div>
+        <div id="loButton">
+            <button id="logoutButton" onclick="window.location.href='@Url.Action("Logout", "Home")'">Logout</button>
+        </div>
+    </div>
+}
+<div id="editorWrapper">
     <div id="toolbar">
         <h1>Commands:</h1>
         <label>A: add new point</label><br />

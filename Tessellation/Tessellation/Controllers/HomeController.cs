@@ -68,6 +68,8 @@ namespace Tessellation.Controllers
         //[Authorize]
         public IActionResult Editor()
         {
+            //ViewBag.Message = TempData["message"];
+            ViewBag.User = HttpContext.Session.GetString("sessionUser");
             return View();
         }
 
