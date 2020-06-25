@@ -6,7 +6,6 @@ body {
     font-family: 'Inter UI', sans-serif;
     margin: 0;
     padding: 0;
-    overflow: hidden;
 }
 
 h1 {
@@ -156,3 +155,36 @@ textarea:focus, input:focus {
     margin-top: 40px;
 }
 
+#picture {
+    box-shadow: 0px 0px 30px -10px;
+    width:1000px;
+    background-color: white;
+    text-align: center;
+    margin: 30px;
+    margin-left:auto;
+    margin-right:auto;
+}
+
+#theimager, #theimagel {
+    display:inline-block;
+}
+
+#theimagebr, #theimagebl {
+    display: inline-block;
+}
+
+#theimager {
+    margin-left:auto;
+}
+
+#theimagel {
+    margin-right: auto;
+}
+
+#theimagebr {
+    margin-left: auto;
+}
+
+#theimagebl {
+    margin-right: auto;
+}

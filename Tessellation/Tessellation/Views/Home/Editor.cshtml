@@ -19,14 +19,15 @@
         <label>D: delete selected</label><br />
         <h1>Tessellate:</h1>
         <label>width:</label><br />
-        <input required /><br />
+        <input required value="2" /><br />
         <label>height:</label><br />
-        <input required /><br />
-        <button type="submit">Let's tesselate!</button>
+        <input required value="2" /><br />
+        <button onclick="makeTessellation()">Let's tesselate!</button>
 
     </div>
     <canvas id="canvas" width="500" height="500"></canvas>
     <script src="https://d3js.org/d3.v4.min.js"></script>
+    <script src="http://hongru.github.io/proj/canvas2image/canvas2image.js"></script>
     @*<script src="~/js/circle.js"></script>*@
     @*<script src="~/js/voronoi.js"></script>*@
     @*touchmove mousemove*@
@@ -195,6 +196,19 @@
             return true;
         }
 
+        //drawforsave-------------------------------------------------------------------------------------------------------------
+        function drawforSave() {
+            var diagram = voronoi(sites),
+                polygons = diagram.polygons();
+
+            context.clearRect(0, 0, width, height);
+
+            context.beginPath();
+            for (var i = 0, n = polygons.length; i < n; ++i) drawCell(polygons[i]);
+            context.strokeStyle = "#000";
+            context.stroke();
+        }
+
         //keyboard events----------------------------------------------------------------------------------------------------------
         document.addEventListener('keydown', function (event) {
             if (event.keyCode == 83) {
@@ -232,6 +246,74 @@
             else if (event.keyCode == 68) {
                 isDelete = true;
             }
-        });
+        })
+
+        function makeTessellation() {
+            document.getElementById('pictureContainer').textContent = '';
+            drawforSave();
+            var pDiv = document.createElement('div');
+            pDiv.id = 'picture';
+
+            var innerImg1 = document.createElement('img');
+            innerImg1.id = 'theimager';
+
+            var innerImg2 = document.createElement('img');
+            innerImg2.id = 'theimagel';
+
+            var innerImg3 = document.createElement('img');
+            innerImg3.id = 'theimagebr';
+
+            var innerImg4 = document.createElement('img');
+            innerImg4.id = 'theimagebl';
+
+            pDiv.appendChild(innerImg1);
+            pDiv.appendChild(innerImg2);
+            pDiv.appendChild(innerImg3);
+            pDiv.appendChild(innerImg4);
+            //var dCanvas = document.createElement('canvas');
+            //pDiv.id = 'dCanvas';
+            document.getElementById('pictureContainer').appendChild(pDiv);
+            //document.getElementById('pictureContainer').appendChild(dCanvas);
+
+            //var canvas = document.getElementById("dCanvas");
+            //var ctx = canvas.getContext("2d");
+            //var img = document.getElementById("scream");
+            //ctx.drawImage(img, 10, 10);
+
+            //convert pictures
+            var canvas = document.getElementById("canvas");
+            document.getElementById("theimager").src = canvas.toDataURL();
+            document.getElementById("theimagel").src = canvas.toDataURL();
+            document.getElementById("theimagebr").src = canvas.toDataURL();
+            document.getElementById("theimagebl").src = canvas.toDataURL();
+            redraw(0);
+            flipImages();
+        }
+
+        function flipImages() {
+            //r
+            //document.getElementById('theimager').style.width = "300px";
+            //document.getElementById('theimager').style.hight = "300px";
+            //l
+            document.getElementById('theimagel').style.webkitTransform = "scaleX(-1)";
+            document.getElementById('theimagel').style.transform = "scaleX(-1)";
+            //br
+            document.getElementById('theimagebr').style.webkitTransform = "scaleY(-1)";
+            document.getElementById('theimagebr').style.transform = "scaleY(-1)";
+            //bl
+            var bl = document.getElementById('theimagebl');
+            bl.style.transform = "rotateX(180deg) rotateY(180deg)";
+
+
+
+        };
     </script>
+</div>
+<div id="pictureContainer">
+    @*<div id="picture">
+        <image id="theimager"></image>
+        <image id="theimagel"></image>
+        <image id="theimagebr"></image>
+        <image id="theimagebl"></image>
+    </div>*@
 </div>
