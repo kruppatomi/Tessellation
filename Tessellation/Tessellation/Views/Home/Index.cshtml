@@ -1,15 +1,12 @@
-﻿@{
+﻿@using Microsoft.AspNetCore.Http;
+@{
     ViewData["Title"] = "Home Page";
+    var guest = "Guest";
 }
 @model Tessellation.Models.User
 
 
-@*@if (ViewBag.User != null)
-{
-    <h1>Logged in as @ViewBag.User</h1>
-    <button onclick="window.location.href='@Url.Action("Logout", "Home")'">Logout</button>
-}*@
-@if (ViewBag.User == null)
+@if (Context.Session.GetString("sessionUser") == null)
 {
     <h1 id="loggedOuth1">Logged out</h1>
 }
@@ -38,6 +35,10 @@
         </form>
     </div>
 </div>
+<div id="guestDiv">
+    <input id="LoginAsGuest" type="button" onclick="location.href='@Url.Action("LoginAsGuest", "Home", new { guest=@guest})'" value="Continue as Guest" class="btn btn-primary" />
+</div>
+
 
 @if (ViewBag.Message != null)
 {
@@ -47,4 +48,3 @@
         }
     </script>
 }
-

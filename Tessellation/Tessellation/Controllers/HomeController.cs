@@ -1,21 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Diagnostics;
-using System.IO;
 using System.Security.Claims;
-using System.Text;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
-using Microsoft.Owin.Security.Cookies;
 using Tessellation.Models;
 using Tessellation.Services;
-using System.Web;
-using Newtonsoft.Json;
 
 namespace Tessellation.Controllers
 {
@@ -30,66 +23,34 @@ namespace Tessellation.Controllers
             _configuration = config;
         }
 
+
         public IActionResult Index()
         {
-
-                ViewBag.Message = TempData["message"];
-                ViewBag.User = HttpContext.Session.GetString("sessionUser");
+            ViewBag.Message = TempData["message"];
+            ViewBag.User = HttpContext.Session.GetString("sessionUser");
 
             return View();
         }
-
-        //public IActionResult Page2(User user)
-        //{
-        //    QueryHandler.connect(_configuration);
-
-        //    //register
-        //    if (QueryHandler.executePasswordSelect(user.Name).Equals("NULL"))
-        //    {
-        //        QueryHandler.insertUsernameAndPassword(user.Name, user.Password);
-        //        return View(user);
-        //    }
-        //    else
-        //    //login
-        //    {
-        //        if((PasswordHandler.verifyPassword(user.Name, user.Password)))
-        //        {
-        //            user.Password = user.Password + " =Verified";
-        //            return View(user);
-        //        }
-        //        else
-        //        {
-        //            return View(user);
-        //        }
-        //    }
-        //}
 
 
         //[Authorize]
         public IActionResult Editor()
         {
-            //ViewBag.Message = TempData["message"];
-            ViewBag.User = HttpContext.Session.GetString("sessionUser");
             return View();
         }
 
 
-        //public IActionResult Authenticate()
-        //{
-        //    var grandmaClaims = new List<Claim>()
-        //    {
-        //        new Claim(ClaimTypes.Name, "Tommer"),
-        //        new Claim(ClaimTypes. "t@tmail.com"),
-        //        new Claim("Grandma.Says", "very nice boy.")
-        //    };
+        //I have to finish this 
+        public void Authenticate(string userName)
+        {
+            var tessellationClaims = new List<Claim>() {
+                    new Claim(ClaimTypes.Name, userName)
+                };
+            var tessellationIdentity = new ClaimsIdentity(tessellationClaims, "Tessellation Identity");
+            var userPrincipal = new ClaimsPrincipal(tessellationIdentity);
+            HttpContext.SignInAsync(userPrincipal);
+        }
 
-        //    var grandmaIdentity = new ClaimsIdentity(grandmaClaims, "Grandma Identity");
-        //    var userPrincipal = new ClaimsPrincipal(grandmaIdentity);
-
-        //    HttpContext.SignInAsync(userPrincipal);
-
-        //    return RedirectToAction("Index");
-        //}
 
         public IActionResult Register(User user)
         {
@@ -99,56 +60,25 @@ namespace Tessellation.Controllers
 
                 if (QueryHandler.executePasswordSelect(user.Name).Equals("NULL"))
                 {
+                    //registration was succesfull;
                     QueryHandler.insertUsernameAndPassword(user.Name, user.Password);
-                    //TempData["message"] = "registration was succesfull";
                     HttpContext.Session.SetString("sessionUser", user.Name);
                 }
                 else
                 {
                     //try to register with existing username
                     TempData["message"] = "username is not available";
-
-
                     return RedirectToAction("Index");
                 }
-                //az authentikációt át kellene rakni a loginba
-                var tessellationClaims = new List<Claim>()
-            {
-                new Claim(ClaimTypes.Name, user.Name)
-            };
-
-                var tessellationIdentity = new ClaimsIdentity(tessellationClaims, "Tessellation Identity");
-                var userPrincipal = new ClaimsPrincipal(tessellationIdentity);
-
-                HttpContext.SignInAsync(userPrincipal);
-
-
-                //decrypt cookie
-                //var provider = DataProtectionProvider.Create(new DirectoryInfo(@"C:\temp-keys\"));
-
-                //string cookieValue = HttpContext.Request.Cookies["Tessellation.Cookie"];
-                //string userName = System.Security.Principal.WindowsIdentity.GetCurrent().Name;
-
-                //var dataProtector = provider.CreateProtector(
-                //typeof(CookieAuthenticationMiddleware).FullName, "MyCookie", "v2");
-
-                //UTF8Encoding specialUtf8Encoding = new UTF8Encoding(false, true);
-                //byte[] protectedBytes = Base64UrlTextEncoder.Decode(cookieValue);
-                //byte[] plainBytes = dataProtector.Unprotect(protectedBytes);
-                //string plainText = specialUtf8Encoding.GetString(plainBytes);
-
-                //return Content(plainText);
-
-                return RedirectToAction("Editor");
+                return Login(user);
             }
             else
             {
                 TempData["message"] = "password and confirm password are note the same!";
                 return RedirectToAction("Index");
             }
-            
-
         }
+
 
         public IActionResult Login(User user)
         {
@@ -157,6 +87,7 @@ namespace Tessellation.Controllers
             if ((PasswordHandler.verifyPassword(user.Name, user.Password)))
             {
                 HttpContext.Session.SetString("sessionUser", user.Name);
+                //Authenticate(user.Name);
                 return RedirectToAction("Editor");
             }
             else
@@ -165,6 +96,15 @@ namespace Tessellation.Controllers
                 return RedirectToAction("Index");
             }
         }
+
+
+        public IActionResult LoginAsGuest(string guest)
+        {
+            //Authenticate(guest);
+            HttpContext.Session.SetString("sessionUser", guest);
+            return RedirectToAction("Editor");
+        }
+
 
         public IActionResult Logout()
         {
@@ -178,7 +118,5 @@ namespace Tessellation.Controllers
         {
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
         }
-
-
     }
 }
