@@ -22,6 +22,7 @@ _UpgradeReport_Files/
 ###############
 # Directories #
 ###############
+.vs/
 bin/
 obj/
 TestResults/
@@ -73,3 +74,4 @@ _[Ss]cripts
 *.nupkg
 *.ncrunchsolution
 *.dot[Cc]over
+dkms.conf
