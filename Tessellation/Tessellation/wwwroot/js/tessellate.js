@@ -1,4 +1,12 @@
-﻿function drawforSave() {
+﻿
+
+
+
+
+let tessellationWidth = document.getElementById('tWidth').value;
+let tessellationHeigth = document.getElementById('tHeight').value;
+
+function drawforSave() {
     let diagram = voronoi(sites),
         polygons = diagram.polygons();
 
@@ -9,6 +17,72 @@
     context.strokeStyle = "#000";
     context.stroke();
 }
+
+//infiniteeeeeee----------------------------------------------------------------------------------------------
+//canvas size 500 x 500
+//points in the sites list
+//TODOS:
+
+//flip points
+//save png
+
+// this function needs refactor!
+function makeInfiniteTessellation() {
+    let tessellationWidth = document.getElementById('tWidth').value;
+    let tessellationHeigth = document.getElementById('tHeight').value;
+
+    let tessellationConteiner = document.getElementById('pictureContainer');
+    //drawforSave();
+    let pDiv = document.createElement('div');
+    pDiv.id = 'picture';
+
+    let canvasToSave = document.createElement('canvas');
+    canvasToSave.id = "tessellationCanvas"
+    canvasToSave.width = 500 * tessellationWidth;
+    canvasToSave.height = 500 * tessellationHeigth;
+    pDiv.appendChild(canvasToSave);
+    tessellationConteiner.appendChild(pDiv);
+
+    //make new canvas with all the points
+    var tessellationCanvas = d3.select("tessellationCanvas").on("touchmove mousemove", mouseMoved).node(),
+        tessellationContext = tessellationCanvas.getContext("2d");
+        tessellationWidth1 = canvasToSave.width,
+        tessellationHeight1 = canvasToSave.height;
+
+    //starting points
+    var tessellationSites = [[100, 100], [200, 200], [200, 100], [300, 200]];
+
+    var tessellationVoronoi = d3.voronoi()
+        .extent([[-1, -1], [tessellationWidth1 + 1, tessellationHeight1 + 1]]);
+
+    redraw(0, tessellationSites, tessellationVoronoi, tessellationContext);
+
+
+
+    //for (let i = 0; i < tessellationWidth * tessellationHeigth; i++) {
+    //    let canvas = document.getElementById("canvas");
+    //    let innerImg = document.createElement('img');
+    //    innerImg.id = 'theimage' + i;
+    //    innerImg.src = canvas.toDataURL();
+    //    pDiv.appendChild(innerImg);
+    //}
+    ////// from-
+    ////let imagesToFlipdownFrom
+    ////// -to
+    ////let imagesToFlipdownTo
+
+
+    //document.getElementById('pictureContainer').appendChild(pDiv);
+
+
+    ////convert pictures
+    ////document.getElementById("theimagel").src = canvas.toDataURL();
+    ////document.getElementById("theimagebr").src = canvas.toDataURL();
+    ////document.getElementById("theimagebl").src = canvas.toDataURL();
+    ////redraw(0);
+    ////flipImages();
+}
+
 
 function makeTessellation() {
     document.getElementById('pictureContainer').textContent = '';

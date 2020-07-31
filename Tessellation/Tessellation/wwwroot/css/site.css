@@ -176,7 +176,6 @@ textarea:focus, input:focus {
 #picture {
     box-shadow: 0px 0px 30px -10px;
     width: 1000px;
-    background-color: white;
     text-align: center;
     margin: 30px;
     margin-left: auto;

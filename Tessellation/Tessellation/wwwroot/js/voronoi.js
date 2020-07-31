@@ -9,7 +9,7 @@ var sites = [[100, 100], [200, 200], [200, 100], [300, 200]];
 var voronoi = d3.voronoi()
     .extent([[-1, -1], [width + 1, height + 1]]);
 
-redraw(0);
+redraw(0, sites, voronoi, context);
 
 Math.dist = function (x1, y1, x2, y2) {
     if (!x2) x2 = 0;
@@ -48,12 +48,12 @@ function mouseMoved() {
     }
     if (isGrab && isSelect) {
         sites[nearestP] = d3.mouse(this);
-        redraw(nearestP);
+        redraw(nearestP, sites, voronoi, context);
     }
 
     if (isDelete && isSelect) {
         sites.splice(nearestP, 1);
-        redraw(nearestP);
+        redraw(nearestP, sites, voronoi, context);
         isDelete = false;
     }
 
@@ -63,20 +63,20 @@ function mouseMoved() {
             newPointWasAdded = true;
         }
         sites[sites.length - 1] = d3.mouse(this);
-        redraw(sites.length - 1);
+        redraw(sites.length - 1, sites, voronoi, context);
     }
 }
 
 function coloriseSelected(near) {
     context.beginPath();
-    for (let i = 0, n = sites.length; i < n; ++i) drawSite(sites[i]);
+    for (let i = 0, n = sites.length; i < n; ++i) drawSite(sites[i], context);
     context.fillStyle = "#000";
     context.fill();
     context.strokeStyle = "#fff";
     context.stroke();
 
     context.beginPath();
-    drawSite(sites[near]);
+    drawSite(sites[near], context);
     context.fillStyle = "#f00";
     context.fill();
     //iadded this
@@ -84,38 +84,38 @@ function coloriseSelected(near) {
     context.stroke();
 }
 
-function redraw(near) {
-    let diagram = voronoi(sites),
+function redraw(near, points, selectedVoronoi, voronoiContext) {
+    let diagram = selectedVoronoi(points),
         polygons = diagram.polygons();
 
-    context.clearRect(0, 0, width, height);
-    context.beginPath();
-    drawCell(polygons[near]);
+    voronoiContext.clearRect(0, 0, width, height);
+    voronoiContext.beginPath();
+    drawCell(polygons[near], voronoiContext);
 
-    context.beginPath();
-    for (let i = 0, n = polygons.length; i < n; ++i) drawCell(polygons[i]);
-    context.strokeStyle = "#000";
-    context.stroke();
+    voronoiContext.beginPath();
+    for (let i = 0, n = polygons.length; i < n; ++i) drawCell(polygons[i], voronoiContext);
+    voronoiContext.strokeStyle = "#000";
+    voronoiContext.stroke();
 
-    context.beginPath();
-    for (let i = 0, n = sites.length; i < n; ++i) drawSite(sites[i]);
-    context.fillStyle = "#000";
-    context.fill();
-    context.strokeStyle = "#fff";
-    context.stroke();
+    voronoiContext.beginPath();
+    for (let i = 0, n = points.length; i < n; ++i) drawSite(points[i], voronoiContext);
+    voronoiContext.fillStyle = "#000";
+    voronoiContext.fill();
+    voronoiContext.strokeStyle = "#fff";
+    voronoiContext.stroke();
 }
 
-function drawSite(site) {
-    context.moveTo(site[0] + 2.5, site[1]);
-    context.arc(site[0], site[1], 2.5, 0, 2 * Math.PI, false);
+function drawSite(site, voronoiContext) {
+    voronoiContext.moveTo(site[0] + 2.5, site[1]);
+    voronoiContext.arc(site[0], site[1], 2.5, 0, 2 * Math.PI, false);
 }
 
-function drawCell(cell) {
+function drawCell(cell, voronoiContext) {
     if (!cell) return false;
-    context.moveTo(cell[0][0], cell[0][1]);
+    voronoiContext.moveTo(cell[0][0], cell[0][1]);
     for (let j = 1, m = cell.length; j < m; ++j) {
-        context.lineTo(cell[j][0], cell[j][1]);
+        voronoiContext.lineTo(cell[j][0], cell[j][1]);
     }
-    context.closePath();
+    voronoiContext.closePath();
     return true;
 };
