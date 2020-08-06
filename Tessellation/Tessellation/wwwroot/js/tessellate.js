@@ -1,21 +1,21 @@
 ﻿
-
-
-
-
-let tessellationWidth = document.getElementById('tWidth').value;
-let tessellationHeigth = document.getElementById('tHeight').value;
+var tessellationWidth;
+var tessellationHeigth;
+var tessellationContext;
+var tessellationSites = [];
+var tessellationVoronoi;
+var canvasToSave;
 
 function drawforSave() {
-    let diagram = voronoi(sites),
-        polygons = diagram.polygons();
+    let tessellationDiagram = tessellationVoronoi(tessellationSites),
+        tessellationPolygons = tessellationDiagram.polygons();
 
-    context.clearRect(0, 0, width, height);
+    tessellationContext.clearRect(0, 0, canvasToSave.width, canvasToSave.height);
 
-    context.beginPath();
-    for (let i = 0, n = polygons.length; i < n; ++i) drawCell(polygons[i]);
-    context.strokeStyle = "#000";
-    context.stroke();
+    tessellationContext.beginPath();
+    for (let i = 0, n = tessellationPolygons.length; i < n; ++i) drawCell(tessellationPolygons[i], tessellationContext);
+    tessellationContext.strokeStyle = "#000";
+    tessellationContext.stroke();
 }
 
 //infiniteeeeeee----------------------------------------------------------------------------------------------
@@ -26,17 +26,30 @@ function drawforSave() {
 //flip points
 //save png
 
-// this function needs refactor!
-function makeInfiniteTessellation() {
-    let tessellationWidth = document.getElementById('tWidth').value;
-    let tessellationHeigth = document.getElementById('tHeight').value;
+function calculateMirroredPoints() {
+    tessellationSites = [];
+    for (let i = 0; i < sites.length; i++) {
+        tessellationSites.push(sites[i]);
+        tessellationSites.push([sites[i][0], canvasToSave.height - sites[i][1]]);
+        tessellationSites.push([canvasToSave.width - sites[i][0], sites[i][1]]);
+        tessellationSites.push([canvasToSave.width - sites[i][0], canvasToSave.height - sites[i][1]]);
+    }
+}
+
+
+function initialise() {
+    tessellationWidth = document.getElementById('tWidth').value;
+    tessellationHeigth = document.getElementById('tHeight').value;
 
     let tessellationConteiner = document.getElementById('pictureContainer');
-    //drawforSave();
+    if (document.getElementById('picture') == null) {
+    
+}
     let pDiv = document.createElement('div');
     pDiv.id = 'picture';
 
-    let canvasToSave = document.createElement('canvas');
+    //declare and initialise canvas
+    canvasToSave = document.createElement('canvas');
     canvasToSave.id = "tessellationCanvas"
     canvasToSave.width = 500 * tessellationWidth;
     canvasToSave.height = 500 * tessellationHeigth;
@@ -44,43 +57,24 @@ function makeInfiniteTessellation() {
     tessellationConteiner.appendChild(pDiv);
 
     //make new canvas with all the points
-    var tessellationCanvas = d3.select("tessellationCanvas").on("touchmove mousemove", mouseMoved).node(),
-        tessellationContext = tessellationCanvas.getContext("2d");
-        tessellationWidth1 = canvasToSave.width,
-        tessellationHeight1 = canvasToSave.height;
+    var tessellationCanvas = document.getElementById("tessellationCanvas");
+    tessellationContext = tessellationCanvas.getContext("2d");
+
 
     //starting points
-    var tessellationSites = [[100, 100], [200, 200], [200, 100], [300, 200]];
+    //initialise tessellation sites
+    calculateMirroredPoints();
 
-    var tessellationVoronoi = d3.voronoi()
-        .extent([[-1, -1], [tessellationWidth1 + 1, tessellationHeight1 + 1]]);
+    tessellationVoronoi = d3.voronoi()
+        .extent([[-1, -1], [canvasToSave.width+1, canvasToSave.height+1]]);
 
-    redraw(0, tessellationSites, tessellationVoronoi, tessellationContext);
+}
 
-
-
-    //for (let i = 0; i < tessellationWidth * tessellationHeigth; i++) {
-    //    let canvas = document.getElementById("canvas");
-    //    let innerImg = document.createElement('img');
-    //    innerImg.id = 'theimage' + i;
-    //    innerImg.src = canvas.toDataURL();
-    //    pDiv.appendChild(innerImg);
-    //}
-    ////// from-
-    ////let imagesToFlipdownFrom
-    ////// -to
-    ////let imagesToFlipdownTo
-
-
-    //document.getElementById('pictureContainer').appendChild(pDiv);
-
-
-    ////convert pictures
-    ////document.getElementById("theimagel").src = canvas.toDataURL();
-    ////document.getElementById("theimagebr").src = canvas.toDataURL();
-    ////document.getElementById("theimagebl").src = canvas.toDataURL();
-    ////redraw(0);
-    ////flipImages();
+// this function needs refactor!
+function makeInfiniteTessellation() {
+    initialise()
+    //redraw(0, tessellationSites, tessellationVoronoi, tessellationContext);
+    drawforSave();
 }
 
 
