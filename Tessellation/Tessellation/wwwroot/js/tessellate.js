@@ -85,12 +85,12 @@ function calculateMirroredPoints() {
     }
     for (let i = ba; i > 0; i--) {
         for (let j = 0; j < sites.length; j++) {
-            tessellationSites.push([sites[j][0], 500 * (i+1) - sites[j][1]]);
+            tessellationSites.push([500 * i + sites[j][0], 500 * (i+1) - sites[j][1]]);
         }
     }
     for (let i = ja; i > 0; i--) {
         for (let j = 0; j < sites.length; j++) {
-            tessellationSites.push([500 * i - sites[j][0], 500 * (i+1) - sites[j][1]]);
+            tessellationSites.push([500 * (i+1) - sites[j][0], 500 * i - sites[j][1]]);
         }
     }
 
