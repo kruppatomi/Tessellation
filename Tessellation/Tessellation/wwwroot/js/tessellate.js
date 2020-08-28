@@ -39,6 +39,7 @@ function drawforSave() {
 //    }
 //}
 
+//start again with vscode
 function calculateMirroredPoints() {
 
     let bf;
