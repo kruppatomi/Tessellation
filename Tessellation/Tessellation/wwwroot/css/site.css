@@ -205,3 +205,7 @@ textarea:focus, input:focus {
 #theimagebl {
     margin-right: auto;
 }
+
+#tessellationCanvas {
+    border: solid 2px black;
+}

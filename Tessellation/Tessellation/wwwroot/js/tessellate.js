@@ -47,6 +47,7 @@ function calculateMirroredPoints() {
     let ba;
     let ja;
 
+    //nem jó a képek
     if (tessellationWidth % 2 == 0 && tessellationHeight % 2 == 0) {
         bf = (tessellationWidth / 2) * (tessellationHeight / 2);
         jf = bf;
@@ -54,12 +55,18 @@ function calculateMirroredPoints() {
         ja = bf;
 
     }
+    //itt romlik el
     if (tessellationWidth % 2 != 0 && tessellationHeight % 2 == 0) {
         bf = ((Math.floor(tessellationWidth / 2) + 1) * tessellationHeight / 2);
         jf = (Math.floor(tessellationWidth / 2) * tessellationHeight / 2);
         ba = ((Math.floor(tessellationWidth / 2) + 1) * tessellationHeight / 2);
         ja = ((Math.floor(tessellationWidth / 2)) * tessellationHeight / 2);
     }
+    console.log("bf:" + bf);
+    console.log("jf:" + jf);
+    console.log("ja:" + ja);
+    console.log("ba:" + ba);
+
     if (tessellationWidth % 2 != 0 && tessellationHeight % 2 != 0) {
         bf = ((Math.floor(tessellationWidth / 2) + 1) * (Math.floor(tessellationHeight / 2) + 1));
         jf = (Math.floor(tessellationWidth / 2) * (Math.floor(tessellationHeight / 2) + 1));
@@ -76,23 +83,41 @@ function calculateMirroredPoints() {
 
     for (let i = bf; i > 0; i--) {
         for (let j = 0; j < sites.length; j++) {
+            if(i>1){
+                tessellationSites.push([500 * i + sites[j][0], sites[j][1]]);
+                continue;
+            }
             tessellationSites.push([500 * (i - 1) + sites[j][0], sites[j][1]]);
         }
     }
+    //a második kép 500 al el van csúszva
     for (let i = jf; i > 0; i--) {
         for (let j = 0; j < sites.length; j++) {
+            if(i>1){
+                tessellationSites.push([500 * (i*2) - sites[j][0], sites[j][1]]);
+                continue;
+            }
             tessellationSites.push([500 * (i+1) - sites[j][0], sites[j][1]]);
         }
     }
     for (let i = ba; i > 0; i--) {
         for (let j = 0; j < sites.length; j++) {
-            //ez a helyén van
+            if(i>1){
+                tessellationSites.push([500 * i + sites[j][0], 500 * i - sites[j][1]]);
+                continue;
+            }
+            //helyén van
             tessellationSites.push([500 * (i-1) + sites[j][0], 500 * (i+1) - sites[j][1]]);
         }
     }
+    //itt komoly bajok vannak 1900,900 helyett 1400,1400
     for (let i = ja; i > 0; i--) {
         for (let j = 0; j < sites.length; j++) {
-
+            if(i>1){
+                tessellationSites.push([500 * (i*2) - sites[j][0], 500 * i - sites[j][1]]);
+                continue;
+            }
+            //helyén van
             tessellationSites.push([500 * (i+1) - sites[j][0], 500 * (i+1) - sites[j][1]]);
         }
     }
