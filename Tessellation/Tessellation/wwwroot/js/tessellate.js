@@ -110,7 +110,7 @@ function calculateMirroredPoints() {
             tessellationSites.push([500 * (i-1) + sites[j][0], 500 * (i+1) - sites[j][1]]);
         }
     }
-    //itt komoly bajok vannak 1900,900 helyett 1400,1400
+    //itt komoly bajok vannak 1900,900 helyett 1400,1400--kicsiben megoldva nagyban nem
     for (let i = ja; i > 0; i--) {
         for (let j = 0; j < sites.length; j++) {
             if(i>1){
