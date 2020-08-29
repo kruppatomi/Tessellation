@@ -62,23 +62,25 @@ function calculateMirroredPoints() {
         ba = ((Math.floor(tessellationWidth / 2) + 1) * tessellationHeight / 2);
         ja = ((Math.floor(tessellationWidth / 2)) * tessellationHeight / 2);
     }
-    console.log("bf:" + bf);
-    console.log("jf:" + jf);
-    console.log("ja:" + ja);
-    console.log("ba:" + ba);
+
 
     if (tessellationWidth % 2 != 0 && tessellationHeight % 2 != 0) {
         bf = ((Math.floor(tessellationWidth / 2) + 1) * (Math.floor(tessellationHeight / 2) + 1));
         jf = (Math.floor(tessellationWidth / 2) * (Math.floor(tessellationHeight / 2) + 1));
         ba = ((Math.floor(tessellationWidth / 2) + 1) * (Math.floor(tessellationHeight / 2)));
-        ja = ((Math.floor(tessellationWidth / 2) + 1) * (Math.floor(tessellationHeight / 2)));
+        ja = (Math.floor(tessellationWidth / 2) * (Math.floor(tessellationHeight / 2)));
     }
+    //bal alsó száma nem megfelelő
     if (tessellationWidth % 2 == 0 && tessellationHeight % 2 != 0) {
         bf = (tessellationWidth / 2) * (Math.floor(tessellationHeight / 2) + 1);
         jf = (tessellationWidth / 2) * (Math.floor(tessellationHeight / 2) + 1);
-        ba = ((Math.floor(tessellationWidth / 2) + 1) * (Math.floor(tessellationHeight / 2)));
+        ba = (tessellationWidth / 2) * (Math.floor(tessellationHeight / 2));
         ja = (tessellationWidth / 2) * (Math.floor(tessellationHeight / 2));
     }
+    console.log("bf:" + bf);
+    console.log("jf:" + jf);
+    console.log("ja:" + ja);
+    console.log("ba:" + ba);
     tessellationSites = [];
 
     for (let i = bf; i > 0; i--) {
