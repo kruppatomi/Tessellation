@@ -99,6 +99,11 @@ function calculateVoronoiPointsPlace(picturePart, ppr, name){
 }
 
 function initialise() {
+    if(document.getElementById("picture")){
+        var elem = document.getElementById("picture");
+        elem.parentElement.removeChild(elem);
+    }
+    
     tessellationWidth = document.getElementById('tWidth').value;
     tessellationHeight = document.getElementById('tHeight').value;
 
