@@ -77,10 +77,34 @@ function calculateMirroredPoints() {
         ba = (tessellationWidth / 2) * (Math.floor(tessellationHeight / 2));
         ja = (tessellationWidth / 2) * (Math.floor(tessellationHeight / 2));
     }
-    console.log("bf:" + bf);
-    console.log("jf:" + jf);
-    console.log("ja:" + ja);
-    console.log("ba:" + ba);
+
+    let bfRows;
+    let jfRows;
+    let baRows;
+    let jaRows;
+
+    //set rows number
+    if(tessellationHeight %2 == 0){
+        //azt az esete nem kezelem amikor túl kicsi a tessaláció pl 1x1!!!!!!!!!!!!!!!!!!!!!!!!!!
+        bfRows = tessellationHeight/2;
+        jfRows = bfRows;
+        baRows = bfRows;
+        jaRows = bfRows;
+    }
+    if(tessellationHeight %2 != 0){
+        bfRows = Math.floor(tessellationHeight/2)+1;
+        jfRows = bfRows;
+        baRows = Math.floor(tessellationHeight/2);
+        jaRows = baRows;
+    }
+
+    console.log("bf:" + bf + " bfRows:" + bfRows);
+    console.log("jf:" + jf + " jfRows:" + jfRows);
+    console.log("ba:" + ba + " baRows:" + baRows);
+    console.log("ja:" + ja + " jaRows:" + jaRows);
+    console.log("--------");
+
+    //EDDIG JÓ!----------------------------A KÉP KOCKÁK SZÁMA MEGFELELŐ------------------------------------
     tessellationSites = [];
 
     for (let i = bf; i > 0; i--) {
