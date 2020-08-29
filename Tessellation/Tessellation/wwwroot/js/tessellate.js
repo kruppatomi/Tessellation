@@ -98,55 +98,83 @@ function calculateMirroredPoints() {
         jaRows = baRows;
     }
 
-    console.log("bf:" + bf + " bfRows:" + bfRows);
-    console.log("jf:" + jf + " jfRows:" + jfRows);
-    console.log("ba:" + ba + " baRows:" + baRows);
-    console.log("ja:" + ja + " jaRows:" + jaRows);
+    let bfppr = bf/bfRows;
+    let jfppr = jf/jfRows;
+    let bappr = ba/baRows;
+    let jappr = ja/jaRows;
+
+    console.log("bf:" + bf + " bfRows:" + bfRows + " ppr:" + bfppr);
+    console.log("jf:" + jf + " jfRows:" + jfRows + " ppr:" + jfppr);
+    console.log("ba:" + ba + " baRows:" + baRows + " ppr:" + bappr);
+    console.log("ja:" + ja + " jaRows:" + jaRows + " ppr:" + jappr);
     console.log("--------");
 
     //EDDIG JÓ!----------------------------A KÉP KOCKÁK SZÁMA MEGFELELŐ------------------------------------
     tessellationSites = [];
 
+
+    //forgatás-------------------------------------------------------------------------------------------------
+    //mostmár tudom hogy egy sorban hány kép van tehát ha új sor következik akkor kell növelni a számokat
+    let counter = 0;
+
     for (let i = bf; i > 0; i--) {
+        if(i%bfppr == 0){ counter++ }
         for (let j = 0; j < sites.length; j++) {
-            if(i>1){
-                tessellationSites.push([500 * i + sites[j][0], sites[j][1]]);
-                continue;
+            // if(bfRows)
+            // if(i>1){
+                //     tessellationSites.push([500 * i + sites[j][0], sites[j][1]]);
+                //     continue;
+                // }
+                tessellationSites.push([500 * (counter - 1) + sites[j][0], sites[j][1]]);
             }
-            tessellationSites.push([500 * (i - 1) + sites[j][0], sites[j][1]]);
         }
-    }
+    
+    counter = 0;
     //a második kép 500 al el van csúszva
     for (let i = jf; i > 0; i--) {
+        if(i%jfppr == 0){ counter++ }
         for (let j = 0; j < sites.length; j++) {
-            if(i>1){
-                tessellationSites.push([500 * (i*2) - sites[j][0], sites[j][1]]);
-                continue;
-            }
-            tessellationSites.push([500 * (i+1) - sites[j][0], sites[j][1]]);
+            
+            // if(i>1){
+            //     tessellationSites.push([500 * (i*2) - sites[j][0], sites[j][1]]);
+            //     continue;
+            // }
+            // // tessellationSites.push([500 * (i+1) - sites[j][0], sites[j][1]]);
+            tessellationSites.push([500 * (counter + 1) - sites[j][0], sites[j][1]]);
         }
     }
+    counter = 0;
     for (let i = ba; i > 0; i--) {
+        if(i%bappr == 0){ counter++ }
         for (let j = 0; j < sites.length; j++) {
-            if(i>1){
-                tessellationSites.push([500 * i + sites[j][0], 500 * i - sites[j][1]]);
-                continue;
-            }
+            // if(i>1){
+            //     tessellationSites.push([500 * i + sites[j][0], 500 * i - sites[j][1]]);
+            //     continue;
+            // }
             //helyén van
-            tessellationSites.push([500 * (i-1) + sites[j][0], 500 * (i+1) - sites[j][1]]);
+            // tessellationSites.push([500 * (i-1) + sites[j][0], 500 * (i+1) - sites[j][1]]);
+            tessellationSites.push([500 * (counter-1) + sites[j][0], 500 * (counter + 1) - sites[j][1]]);
         }
     }
+    counter = 0;
     //itt komoly bajok vannak 1900,900 helyett 1400,1400--kicsiben megoldva nagyban nem
     for (let i = ja; i > 0; i--) {
+        if(i%jappr == 0){ counter++ }
         for (let j = 0; j < sites.length; j++) {
-            if(i>1){
-                tessellationSites.push([500 * (i*2) - sites[j][0], 500 * i - sites[j][1]]);
-                continue;
-            }
+            // if(i>1){
+            //     tessellationSites.push([500 * (i*2) - sites[j][0], 500 * i - sites[j][1]]);
+            //     continue;
+            // }
             //helyén van
-            tessellationSites.push([500 * (i+1) - sites[j][0], 500 * (i+1) - sites[j][1]]);
+            // tessellationSites.push([500 * (i+1) - sites[j][0], 500 * (i+1) - sites[j][1]]);
+            tessellationSites.push([500 * (counter + 1) - sites[j][0], 500 * (counter + 1) - sites[j][1]]);
         }
     }
+}
+    //forgatás-------------------------------------------------------------------------------------------------
+
+
+
 
     //for (let i = 0; i < sites.length; i++) {
     //    //Sima
@@ -191,7 +219,7 @@ function calculateMirroredPoints() {
     //    }
 
 
-}
+
 
 
 
