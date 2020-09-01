@@ -24,14 +24,23 @@
         <label>height:</label><br />
         <input id="tHeight" required value="2" /><br />
         <button onclick="makeInfiniteTessellation()">Let's tesselate!</button>
+        <button class="download-button">Download</button>
     </div>
     <canvas id="canvas" width="500" height="500"></canvas>
 </div>
 
-<div id="pictureContainer" />
+<div id="pictureContainer"></div>
+<div class="modal-bg">
+    <div class="modal">
+        <form>
+            <label for="fileName">File name</label>
+            <input id="fileName" placeholder="enter your file name" required name="fileName">
+            <input id="true-download-button" type="submit" value="Download">
+        </form>
+    </div>
+</div>
 
 <script src="https://d3js.org/d3.v4.min.js"></script>
-<script src="http://hongru.github.io/proj/canvas2image/canvas2image.js"></script>
 <script src="~/js/keyboardEvents.js" asp-append-version="true"></script>
 <script src="~/js/voronoi.js" asp-append-version="true"></script>
 <script src="~/js/tessellate.js" asp-append-version="true"></script>

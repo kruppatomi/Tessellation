@@ -134,39 +134,53 @@ function initialise() {
 
 function makeInfiniteTessellation() {
     initialise();
-    drawforSave();
     addDownloadOption();
+    drawforSave();
 }
 
 function addDownloadOption(){
-    let tessellationConteiner = document.getElementById('pictureContainer');
-    let dForm = document.createElement("form");
-    dForm.id = "download-form"
-    tessellationConteiner.appendChild(dForm);
-
-    let fileName = document.createElement("input");
-    fileName.placeholder = "enter your filename";
-    fileName.setAttribute("required", "");
-    fileName.id = "fileName";
-    document.getElementById("download-form").appendChild(fileName);
+    if(!document.getElementById("download-form")){
+        let tessellationConteiner = document.getElementById('pictureContainer');
+        let dForm = document.createElement("form");
+        dForm.id = "download-form"
+        tessellationConteiner.appendChild(dForm);
     
-    let dButton = document.createElement("input");
-    dButton.id = "dButton";
-    dButton.value = "Download";
-    dButton.type = "submit";
-    document.getElementById("download-form").appendChild(dButton);
-    
+        let fileName = document.createElement("input");
+        fileName.placeholder = "enter your filename";
+        fileName.setAttribute("required", "");
+        fileName.id = "fileName";
+        document.getElementById("download-form").appendChild(fileName);
+        
+        let dButton = document.createElement("input");
+        dButton.id = "dButton";
+        dButton.value = "Download";
+        dButton.type = "submit";
+        document.getElementById("download-form").appendChild(dButton);
+    }
     downloadPicture();
+
+    let dwnButton = document.querySelector(".download-button");
+    let modal = document.querySelector(".modal-bg");
+
+    dwnButton.addEventListener("click", function() {
+        modal.classList.add(".bg-activate");
+    });
 }
 
 
 function downloadPicture(){
-    document.getElementById("dButton").onclick = function(){
-        // const a = document.createElement("a");
-        // document.body.appendChild(a);
-        // a.href = tessellationCanvas.toDataURL();
-        // a.download = document.getElementById("fileName").value + ".png";
-        // a.click();
-        // document.body.removeChild(a);
-    };
+    // document.getElementById("dButton").onclick = function(){
+    //     if(document.getElementById("fileName").value){
+    //         const a = document.createElement("a");
+    //         document.body.appendChild(a);
+    //         a.href = tessellationCanvas.toDataURL();
+    //         a.download = document.getElementById("fileName").value + ".png";
+    //         a.click();
+    //         document.body.removeChild(a);
+    //     }
+    // };
+    //     document.querySelector(".download-button").onclick = function(){
+    //         document.querySelector(".modal-bg").classList.add("bg-activate");
+    // };
 }
+

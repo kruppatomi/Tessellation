@@ -209,3 +209,33 @@ textarea:focus, input:focus {
 #tessellationCanvas {
     border: solid 2px black;
 }
+
+.modal-bg {
+    position: fixed;
+    width: 100%;
+    height: 100vh;
+    top: 0;
+    left: 0;
+    background-color: rgba(0, 0, 0, 0.8);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    visibility: hidden;
+    opacity: 0;
+    transition: visibility 0s opacity 0.5s;
+}
+
+.modal {
+    background-color: white;
+    width: 50%;
+    height: 30%;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    flex-direction: column;
+}
+
+.bg-activate {
+    opacity: 1;
+    visibility: visible;
+}
