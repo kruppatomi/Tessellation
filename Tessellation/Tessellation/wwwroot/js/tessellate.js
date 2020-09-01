@@ -4,6 +4,7 @@ var tessellationContext;
 var tessellationSites = [];
 var tessellationVoronoi;
 var canvasToSave;
+var tessellationCanvas
 
 function drawforSave() {
     let tessellationDiagram = tessellationVoronoi(tessellationSites),
@@ -121,7 +122,7 @@ function initialise() {
     pDiv.appendChild(canvasToSave);
     tessellationConteiner.appendChild(pDiv);
     //make new canvas with all the points
-    var tessellationCanvas = document.getElementById("tessellationCanvas");
+    tessellationCanvas = document.getElementById("tessellationCanvas");
     tessellationContext = tessellationCanvas.getContext("2d");
     //starting points
     //initialise tessellation sites
@@ -132,6 +133,40 @@ function initialise() {
 }
 
 function makeInfiniteTessellation() {
-    initialise()
+    initialise();
     drawforSave();
+    addDownloadOption();
+}
+
+function addDownloadOption(){
+    let tessellationConteiner = document.getElementById('pictureContainer');
+    let dForm = document.createElement("form");
+    dForm.id = "download-form"
+    tessellationConteiner.appendChild(dForm);
+
+    let fileName = document.createElement("input");
+    fileName.placeholder = "enter your filename";
+    fileName.setAttribute("required", "");
+    fileName.id = "fileName";
+    document.getElementById("download-form").appendChild(fileName);
+    
+    let dButton = document.createElement("input");
+    dButton.id = "dButton";
+    dButton.value = "Download";
+    dButton.type = "submit";
+    document.getElementById("download-form").appendChild(dButton);
+    
+    downloadPicture();
+}
+
+
+function downloadPicture(){
+    document.getElementById("dButton").onclick = function(){
+        // const a = document.createElement("a");
+        // document.body.appendChild(a);
+        // a.href = tessellationCanvas.toDataURL();
+        // a.download = document.getElementById("fileName").value + ".png";
+        // a.click();
+        // document.body.removeChild(a);
+    };
 }
