@@ -130,6 +130,9 @@ function initialise() {
 
     tessellationVoronoi = d3.voronoi()
         .extent([[-1, -1], [canvasToSave.width + 1, canvasToSave.height + 1]]);
+    
+    //add modal
+    handleModal();
 }
 
 function makeInfiniteTessellation() {
@@ -139,39 +142,24 @@ function makeInfiniteTessellation() {
 }
 
 function addDownloadOption(){
-    if(!document.getElementById("download-form")){
-        let tessellationConteiner = document.getElementById('pictureContainer');
-        let dForm = document.createElement("form");
-        dForm.id = "download-form"
-        tessellationConteiner.appendChild(dForm);
-    
-        let fileName = document.createElement("input");
-        fileName.placeholder = "enter your filename";
-        fileName.setAttribute("required", "");
-        fileName.id = "fileName";
-        document.getElementById("download-form").appendChild(fileName);
-        
-        let dButton = document.createElement("input");
-        dButton.id = "dButton";
-        dButton.value = "Download";
-        dButton.type = "submit";
-        document.getElementById("download-form").appendChild(dButton);
-    }
     downloadPicture();
 }
 
 
 function downloadPicture(){
-    // document.getElementById("dButton").onclick = function(){
-    //     if(document.getElementById("fileName").value){
-    //         const a = document.createElement("a");
-    //         document.body.appendChild(a);
-    //         a.href = tessellationCanvas.toDataURL();
-    //         a.download = document.getElementById("fileName").value + ".png";
-    //         a.click();
-    //         document.body.removeChild(a);
-    //     }
-    // };
+    document.getElementById("true-download-button").onclick = function(){
+        if(document.getElementById("fileName").value){
+            const a = document.createElement("a");
+            document.body.appendChild(a);
+            a.href = tessellationCanvas.toDataURL();
+            a.download = document.getElementById("fileName").value + ".png";
+            a.click();
+            document.body.removeChild(a);
+        }
+    };
+}
+
+function handleModal(){
     document.querySelector(".download-button").onclick = function(){
         document.querySelector(".modal-bg").classList.add("bg-activate");
     };
@@ -179,4 +167,5 @@ function downloadPicture(){
         document.querySelector(".modal-bg").classList.remove("bg-activate");
     };
 }
+
 

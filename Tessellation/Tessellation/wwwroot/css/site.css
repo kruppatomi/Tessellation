@@ -253,6 +253,10 @@ textarea:focus, input:focus {
 }
 
 #fileNameLabel {
-    max-width: 150px;
+    max-width: 100px;
     font-weight: 800;
+}
+
+#pictureContainer{
+    overflow-x: scroll;
 }
