@@ -72,6 +72,7 @@ function coloriseSelected(near) {
     for (let i = 0, n = sites.length; i < n; ++i) drawSite(sites[i], context);
     context.fillStyle = "#000";
     context.fill();
+    //point outline
     context.strokeStyle = "#fff";
     context.stroke();
 
@@ -80,7 +81,7 @@ function coloriseSelected(near) {
     context.fillStyle = "#f00";
     context.fill();
     //iadded this
-    context.strokeStyle = "#fff";
+    context.strokeStyle = "#000";
     context.stroke();
 }
 
@@ -95,11 +96,14 @@ function redraw(near, points, selectedVoronoi, voronoiContext) {
     voronoiContext.beginPath();
     for (let i = 0, n = polygons.length; i < n; ++i) drawCell(polygons[i], voronoiContext);
     voronoiContext.strokeStyle = "#000";
+    // voronoiContext.lineWidth = 5;
+
     voronoiContext.stroke();
 
     voronoiContext.beginPath();
     for (let i = 0, n = points.length; i < n; ++i) drawSite(points[i], voronoiContext);
     voronoiContext.fillStyle = "#000";
+
     voronoiContext.fill();
     voronoiContext.strokeStyle = "#fff";
     voronoiContext.stroke();
