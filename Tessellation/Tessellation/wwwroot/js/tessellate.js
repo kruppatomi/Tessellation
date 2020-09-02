@@ -1,57 +1,179 @@
-﻿function drawforSave() {
-    let diagram = voronoi(sites),
-        polygons = diagram.polygons();
+﻿var tessellationWidth;
+var tessellationHeight;
+var tessellationContext;
+var tessellationSites = [];
+var tessellationVoronoi;
+var canvasToSave;
+var tessellationCanvas
 
-    context.clearRect(0, 0, width, height);
+function drawforSave() {
+    let tessellationDiagram = tessellationVoronoi(tessellationSites),
+        tessellationPolygons = tessellationDiagram.polygons();
 
-    context.beginPath();
-    for (let i = 0, n = polygons.length; i < n; ++i) drawCell(polygons[i]);
-    context.strokeStyle = "#000";
-    context.stroke();
+    tessellationContext.clearRect(0, 0, canvasToSave.width, canvasToSave.height);
+
+    tessellationContext.beginPath();
+    for (let i = 0, n = tessellationPolygons.length; i < n; ++i) drawCell(tessellationPolygons[i], tessellationContext);
+    tessellationContext.strokeStyle = "#000";
+    // tessellationContext.lineWidth = 5;
+    tessellationContext.stroke();
 }
 
-function makeTessellation() {
-    document.getElementById('pictureContainer').textContent = '';
-    drawforSave();
+function calculateMirroredPoints() {
+
+    let bf;
+    let jf;
+    let ba;
+    let ja;
+
+    if (tessellationWidth % 2 == 0 && tessellationHeight % 2 == 0) {
+        bf = (tessellationWidth / 2) * (tessellationHeight / 2);
+        jf = bf;
+        ba = bf;
+        ja = bf;
+
+    }
+    if (tessellationWidth % 2 != 0 && tessellationHeight % 2 == 0) {
+        bf = ((Math.floor(tessellationWidth / 2) + 1) * tessellationHeight / 2);
+        jf = (Math.floor(tessellationWidth / 2) * tessellationHeight / 2);
+        ba = ((Math.floor(tessellationWidth / 2) + 1) * tessellationHeight / 2);
+        ja = ((Math.floor(tessellationWidth / 2)) * tessellationHeight / 2);
+    }
+    if (tessellationWidth % 2 != 0 && tessellationHeight % 2 != 0) {
+        bf = ((Math.floor(tessellationWidth / 2) + 1) * (Math.floor(tessellationHeight / 2) + 1));
+        jf = (Math.floor(tessellationWidth / 2) * (Math.floor(tessellationHeight / 2) + 1));
+        ba = ((Math.floor(tessellationWidth / 2) + 1) * (Math.floor(tessellationHeight / 2)));
+        ja = (Math.floor(tessellationWidth / 2) * (Math.floor(tessellationHeight / 2)));
+    }
+    if (tessellationWidth % 2 == 0 && tessellationHeight % 2 != 0) {
+        bf = (tessellationWidth / 2) * (Math.floor(tessellationHeight / 2) + 1);
+        jf = (tessellationWidth / 2) * (Math.floor(tessellationHeight / 2) + 1);
+        ba = (tessellationWidth / 2) * (Math.floor(tessellationHeight / 2));
+        ja = (tessellationWidth / 2) * (Math.floor(tessellationHeight / 2));
+    }
+
+    let bfRows;
+    let jfRows;
+    let baRows;
+    let jaRows;
+
+    //set rows number
+    if(tessellationHeight %2 == 0){
+        bfRows = tessellationHeight/2;
+        jfRows = bfRows;
+        baRows = bfRows;
+        jaRows = bfRows;
+    }
+    if(tessellationHeight %2 != 0){
+        bfRows = Math.floor(tessellationHeight/2)+1;
+        jfRows = bfRows;
+        baRows = Math.floor(tessellationHeight/2);
+        jaRows = baRows;
+    }
+
+    let bfppr = bf/bfRows;
+    let jfppr = jf/jfRows;
+    let bappr = ba/baRows;
+    let jappr = ja/jaRows;
+
+    tessellationSites = [];
+
+    calculateVoronoiPointsPlace(bf, bfppr, "bf");
+    calculateVoronoiPointsPlace(jf, jfppr, "jf");
+    calculateVoronoiPointsPlace(ba, bappr, "ba");
+    calculateVoronoiPointsPlace(ja, jappr, "ja");
+}
+
+function calculateVoronoiPointsPlace(picturePart, ppr, name){
+    let rCounter = 0;
+    let cCounter = 1;
+    for (let i = picturePart; i > 0; i--) {
+        if(i%ppr == 0){ rCounter++ }
+        if(cCounter%(ppr+1) == 0){ cCounter = 1;}
+        for (let j = 0; j < sites.length; j++) {
+            if(name == "ja"){tessellationSites.push([500 * (cCounter*2) - sites[j][0], (500 * (rCounter*2) - sites[j][1])]);}
+            if(name == "ba"){tessellationSites.push([1000 * (cCounter-1) + sites[j][0], (500 * (rCounter*2) - sites[j][1])]);}
+            if(name == "jf"){tessellationSites.push([500 * (cCounter*2) - sites[j][0], sites[j][1] + 1000*(rCounter-1)]);}
+            if(name == "bf"){tessellationSites.push([1000 * (cCounter-1) + sites[j][0], sites[j][1]  + 1000*(rCounter-1)]);}
+        }
+        cCounter++;
+    }
+}
+
+function initialise() {
+    if(document.getElementById("picture")){
+        var elem = document.getElementById("picture");
+        elem.parentElement.removeChild(elem);
+    }
+    
+    tessellationWidth = document.getElementById('tWidth').value;
+    tessellationHeight = document.getElementById('tHeight').value;
+
+    let tessellationConteiner = document.getElementById('pictureContainer');
+    if (document.getElementById('picture') == null) {
+
+    }
     let pDiv = document.createElement('div');
     pDiv.id = 'picture';
+    //declare and initialise canvas
+    canvasToSave = document.createElement('canvas');
+    canvasToSave.id = "tessellationCanvas"
+    canvasToSave.width = 500 * tessellationWidth;
+    canvasToSave.height = 500 * tessellationHeight;
+    pDiv.appendChild(canvasToSave);
+    tessellationConteiner.appendChild(pDiv);
+    //make new canvas with all the points
+    tessellationCanvas = document.getElementById("tessellationCanvas");
+    tessellationContext = tessellationCanvas.getContext("2d");
+    //starting points
+    //initialise tessellation sites
+    calculateMirroredPoints();
 
-    let innerImg1 = document.createElement('img');
-    innerImg1.id = 'theimager';
-
-    let innerImg2 = document.createElement('img');
-    innerImg2.id = 'theimagel';
-
-    let innerImg3 = document.createElement('img');
-    innerImg3.id = 'theimagebr';
-
-    let innerImg4 = document.createElement('img');
-    innerImg4.id = 'theimagebl';
-
-    pDiv.appendChild(innerImg1);
-    pDiv.appendChild(innerImg2);
-    pDiv.appendChild(innerImg3);
-    pDiv.appendChild(innerImg4);
-    document.getElementById('pictureContainer').appendChild(pDiv);
-
-
-    //convert pictures
-    let canvas = document.getElementById("canvas");
-    document.getElementById("theimager").src = canvas.toDataURL();
-    document.getElementById("theimagel").src = canvas.toDataURL();
-    document.getElementById("theimagebr").src = canvas.toDataURL();
-    document.getElementById("theimagebl").src = canvas.toDataURL();
-    redraw(0);
-    flipImages();
+    tessellationVoronoi = d3.voronoi()
+        .extent([[-1, -1], [canvasToSave.width + 1, canvasToSave.height + 1]]);
+    
+    //add modal
+    handleModal();
 }
 
-function flipImages() {
-    //l
-    document.getElementById('theimagel').style.webkitTransform = "scaleX(-1)";
-    document.getElementById('theimagel').style.transform = "scaleX(-1)";
-    //br
-    document.getElementById('theimagebr').style.webkitTransform = "scaleY(-1)";
-    document.getElementById('theimagebr').style.transform = "scaleY(-1)";
-    //bl
-    document.getElementById('theimagebl').style.transform = "rotateX(180deg) rotateY(180deg)";
-};
+function makeInfiniteTessellation() {
+    initialise();
+    addDownloadOption();
+    drawforSave();
+    document.getElementById("pictureContainer").style.border = "2px solid white"
+}
+
+function addDownloadOption(){
+    downloadPicture();
+}
+
+
+function downloadPicture(){
+    document.getElementById("true-download-button").onclick = function(){
+        if(document.getElementById("fileName").value){
+            const a = document.createElement("a");
+            document.body.appendChild(a);
+            a.href = tessellationCanvas.toDataURL();
+            a.download = document.getElementById("fileName").value + ".png";
+            a.click();
+            document.body.removeChild(a);
+        }
+        else{
+            document.getElementById("fileName").placeholder = "input file name!";
+        }
+    };
+}
+
+function handleModal(){
+    document.querySelector(".download-button").onclick = function(){
+        document.querySelector(".modal-bg").classList.add("bg-activate");
+    };
+    document.querySelector(".modal-close").onclick = function(){
+        document.querySelector(".modal-bg").classList.remove("bg-activate");
+    };
+}
+
+
+//zoom feature
+
+

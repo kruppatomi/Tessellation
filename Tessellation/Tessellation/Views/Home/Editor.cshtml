@@ -20,18 +20,28 @@
         <label>D: delete selected</label><br />
         <h1>Tessellate:</h1>
         <label>width:</label><br />
-        <input required value="2" readonly /><br />
+        <input id="tWidth" required value="2" /><br />
         <label>height:</label><br />
-        <input required value="2" readonly /><br />
-        <button onclick="makeTessellation()">Let's tesselate!</button>
+        <input id="tHeight" required value="2" /><br />
+        <button onclick="makeInfiniteTessellation()">Let's tesselate!</button><br>
+        <button class="download-button">Download</button>
     </div>
     <canvas id="canvas" width="500" height="500"></canvas>
 </div>
 
-<div id="pictureContainer" />
+<div id="pictureContainer"></div>
+<div class="modal-bg">
+    <div class="modal">
+        
+ 
+        <input id="fileName" required name="fileName" placeholder="file name">
+        <input id="true-download-button" type="button" value="Download">
+        
+        <h3 class="modal-close">+</h3>
+    </div>
+</div>
 
 <script src="https://d3js.org/d3.v4.min.js"></script>
-<script src="http://hongru.github.io/proj/canvas2image/canvas2image.js"></script>
 <script src="~/js/keyboardEvents.js" asp-append-version="true"></script>
 <script src="~/js/voronoi.js" asp-append-version="true"></script>
 <script src="~/js/tessellate.js" asp-append-version="true"></script>
