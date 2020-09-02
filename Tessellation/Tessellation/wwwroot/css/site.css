@@ -105,7 +105,7 @@ textarea:focus, input:focus {
     width:70px;
 }
 
-#toolbar button {
+#toolbar button, #true-download-button {
     border: none;
     background-color: black;
     color: white;
@@ -222,13 +222,14 @@ textarea:focus, input:focus {
     align-items: center;
     visibility: hidden;
     opacity: 0;
-    transition: visibility 0s opacity 0.5s;
+    transition: visibility 0s, opacity 0.5s;
 }
 
 .modal {
+    position: relative;
     background-color: white;
-    width: 50%;
-    height: 30%;
+    width: 35%;
+    height: 20%;
     display: flex;
     justify-content: space-around;
     align-items: center;
@@ -238,4 +239,20 @@ textarea:focus, input:focus {
 .bg-activate {
     opacity: 1;
     visibility: visible;
+    transition: visibility 0s, opacity 0.5s;
+}
+
+.modal-close {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    font-weight: bold;
+    cursor: pointer;
+    transform: rotate(-45deg);
+    margin: 0px;
+}
+
+#fileNameLabel {
+    max-width: 150px;
+    font-weight: 800;
 }

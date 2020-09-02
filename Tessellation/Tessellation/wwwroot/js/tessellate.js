@@ -158,13 +158,6 @@ function addDownloadOption(){
         document.getElementById("download-form").appendChild(dButton);
     }
     downloadPicture();
-
-    let dwnButton = document.querySelector(".download-button");
-    let modal = document.querySelector(".modal-bg");
-
-    dwnButton.addEventListener("click", function() {
-        modal.classList.add(".bg-activate");
-    });
 }
 
 
@@ -179,8 +172,11 @@ function downloadPicture(){
     //         document.body.removeChild(a);
     //     }
     // };
-    //     document.querySelector(".download-button").onclick = function(){
-    //         document.querySelector(".modal-bg").classList.add("bg-activate");
-    // };
+    document.querySelector(".download-button").onclick = function(){
+        document.querySelector(".modal-bg").classList.add("bg-activate");
+    };
+    document.querySelector(".modal-close").onclick = function(){
+        document.querySelector(".modal-bg").classList.remove("bg-activate");
+    };
 }
 

@@ -23,7 +23,7 @@
         <input id="tWidth" required value="2" /><br />
         <label>height:</label><br />
         <input id="tHeight" required value="2" /><br />
-        <button onclick="makeInfiniteTessellation()">Let's tesselate!</button>
+        <button onclick="makeInfiniteTessellation()">Let's tesselate!</button><br>
         <button class="download-button">Download</button>
     </div>
     <canvas id="canvas" width="500" height="500"></canvas>
@@ -33,10 +33,11 @@
 <div class="modal-bg">
     <div class="modal">
         <form>
-            <label for="fileName">File name</label>
-            <input id="fileName" placeholder="enter your file name" required name="fileName">
+            <label id="fileNameLabel" for="fileName">File name</label>
+            <input id="fileName" required name="fileName">
             <input id="true-download-button" type="submit" value="Download">
         </form>
+        <h3 class="modal-close">+</h3>
     </div>
 </div>
 
