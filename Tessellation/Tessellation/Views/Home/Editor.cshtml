@@ -19,10 +19,14 @@
         <label>G: grab selected</label><br />
         <label>D: delete selected</label><br />
         <h1>Tessellate:</h1>
-        <label>width:</label><br />
-        <input id="tWidth" required value="2" /><br />
-        <label>height:</label><br />
-        <input id="tHeight" required value="2" /><br />
+        <input id="tWidth" required value="2" />
+        <label>:x</label><br>
+        <input id="tHeight" required value="2" />
+        <label>:y</label><br>
+        <input type="color" id="bg-color-box" value="#ffffff">
+        <label>:bg</label> <br>
+        <input type="color" id="ln-color-box" value="#000000">
+        <label>:ln</label> <br>
         <button onclick="makeInfiniteTessellation()">Let's tesselate!</button><br>
         <button class="download-button">Download</button>
     </div>
