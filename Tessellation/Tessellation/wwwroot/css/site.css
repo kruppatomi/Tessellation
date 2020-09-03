@@ -269,6 +269,7 @@ textarea:focus, input:focus {
     text-align: center;
     margin-top: 30px;
     margin-bottom: 30px;
+    background-color: #808080;
 }
 
 #fileName::placeholder{
@@ -280,3 +281,4 @@ textarea:focus, input:focus {
     background-color: gray;
     border-style: none;
 }
+
