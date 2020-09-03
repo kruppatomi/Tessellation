@@ -12,17 +12,18 @@ namespace Tessellation
 {
     public class Program
     {
-        	public static void Main(string[] args)
-        	{
-            	CreateHostBuilder(args).Build().Run();
-        	}
+        public static void Main(string[] args)
+        {
+            var config = new ConfigurationBuilder().AddCommandLine(args).Build();
+            var host = new WebHostBuilder()
+                .UseKestrel()
+                .UseContentRoot(Directory.GetCurrentDirectory())
+                .UseConfiguration(config)
+                .UseIISIntegration()
+                .UseStartup<Startup>()
+                .Build();
 
-	        public static IHostBuilder CreateHostBuilder(string[] args) =>
-        	    Host.CreateDefaultBuilder(args)
-                	.ConfigureWebHostDefaults(webBuilder =>
-                	{
-                    	webBuilder.UseStartup<Startup>();
-                   	 webBuilder.UseUrls("http://*:" + Environment.GetEnvironmentVariable("PORT")); 
-                });
+            host.Run();
+        }
     }
 }

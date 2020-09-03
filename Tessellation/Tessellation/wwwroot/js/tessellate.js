@@ -14,9 +14,15 @@ function drawforSave() {
 
     tessellationContext.beginPath();
     for (let i = 0, n = tessellationPolygons.length; i < n; ++i) drawCell(tessellationPolygons[i], tessellationContext);
-    tessellationContext.strokeStyle = "#000";
+    tessellationContext.strokeStyle = lnColor;
     // tessellationContext.lineWidth = 5;
     tessellationContext.stroke();
+
+    //colorisejpg
+    tessellationContext.globalCompositeOperation = 'destination-over'
+    // Now draw!
+    tessellationContext.fillStyle = bgColor;
+    tessellationContext.fillRect(0, 0, tessellationCanvas.width, tessellationCanvas.height);
 }
 
 function calculateMirroredPoints() {
@@ -124,7 +130,11 @@ function initialise() {
     tessellationConteiner.appendChild(pDiv);
     //make new canvas with all the points
     tessellationCanvas = document.getElementById("tessellationCanvas");
+    tessellationCanvas.style.backgroundColor = bgColor;
     tessellationContext = tessellationCanvas.getContext("2d");
+
+    
+
     //starting points
     //initialise tessellation sites
     calculateMirroredPoints();
@@ -132,37 +142,16 @@ function initialise() {
     tessellationVoronoi = d3.voronoi()
         .extent([[-1, -1], [canvasToSave.width + 1, canvasToSave.height + 1]]);
     
-    //add modal
-    handleModal();
 }
 
 function makeInfiniteTessellation() {
     initialise();
-    addDownloadOption();
-    drawforSave();
-    document.getElementById("pictureContainer").style.border = "2px solid white"
-}
-
-function addDownloadOption(){
     downloadPicture();
+    drawforSave();
 }
 
 
-function downloadPicture(){
-    document.getElementById("true-download-button").onclick = function(){
-        if(document.getElementById("fileName").value){
-            const a = document.createElement("a");
-            document.body.appendChild(a);
-            a.href = tessellationCanvas.toDataURL();
-            a.download = document.getElementById("fileName").value + ".png";
-            a.click();
-            document.body.removeChild(a);
-        }
-        else{
-            document.getElementById("fileName").placeholder = "input file name!";
-        }
-    };
-}
+
 
 function handleModal(){
     document.querySelector(".download-button").onclick = function(){
