@@ -95,7 +95,7 @@ function redraw(near, points, selectedVoronoi, voronoiContext) {
 
     voronoiContext.beginPath();
     for (let i = 0, n = polygons.length; i < n; ++i) drawCell(polygons[i], voronoiContext);
-    voronoiContext.strokeStyle = linecolor;
+    voronoiContext.strokeStyle = lnColor;
     // voronoiContext.lineWidth = 5;
 
     voronoiContext.stroke();
@@ -125,19 +125,19 @@ function drawCell(cell, voronoiContext) {
 };
 
 
-
+var bgColor = document.getElementById("bg-color-box").value;
 ////colortest
 let colorinput = document.getElementById("bg-color-box");
 colorinput.addEventListener("input", function() {
-    let color = colorinput.value;
-    document.getElementById("canvas").style.backgroundColor = color;
+    bgColor = colorinput.value;
+    document.getElementById("canvas").style.backgroundColor = bgColor;
 })
 
-var linecolor = document.getElementById("ln-color-box").value;
+var lnColor = document.getElementById("ln-color-box").value;
 
 let lncolorinput = document.getElementById("ln-color-box");
 lncolorinput.addEventListener("input", function() {
-     linecolor = lncolorinput.value;
+     lnColor = lncolorinput.value;
      redraw(0, sites, voronoi, context);
 
 })
