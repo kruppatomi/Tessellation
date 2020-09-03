@@ -125,8 +125,8 @@ function drawCell(cell, voronoiContext) {
 };
 
 
+////colorise voronoi
 var bgColor = document.getElementById("bg-color-box").value;
-////colortest
 let colorinput = document.getElementById("bg-color-box");
 colorinput.addEventListener("input", function() {
     bgColor = colorinput.value;
@@ -134,7 +134,6 @@ colorinput.addEventListener("input", function() {
 })
 
 var lnColor = document.getElementById("ln-color-box").value;
-
 let lncolorinput = document.getElementById("ln-color-box");
 lncolorinput.addEventListener("input", function() {
      lnColor = lncolorinput.value;
